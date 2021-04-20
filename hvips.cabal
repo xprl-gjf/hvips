@@ -1,0 +1,78 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.33.0.
+--
+-- see: https://github.com/sol/hpack
+--
+-- hash: 31d61b1ecd741a42e98ad10392b1672e892a141268a568668535ce9390505d76
+
+name:           hvips
+version:        0.1.0.0
+description:    Please see the README on GitHub at <https://github.com/xprl-gjf/hvips#readme>
+homepage:       https://github.com/xprl-gjf/hvips#readme
+bug-reports:    https://github.com/xprl-gjf/hvips/issues
+author:         Gavin Falconer
+maintainer:     <gavin [at] expressivelogic [dot] net>
+copyright:      2021 Gavin Falconer
+license:        LGPL-2.1
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    README.md
+    ChangeLog.md
+
+source-repository head
+  type: git
+  location: https://github.com/xprl-gjf/hvips
+
+library
+  exposed-modules:
+      Vips
+      Vips.VipsResult
+  hs-source-dirs:
+      src
+  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wpartial-fields -Wredundant-constraints
+  build-depends:
+      base >=4.7 && <5
+    , exceptions
+    , filepath
+    , gi-gobject
+    , gi-vips
+    , haskell-gi-base
+    , haskell-gi-overloading ==0.0.*
+    , text
+  if false
+    other-modules:
+        Paths_hvips
+  default-language: Haskell2010
+
+executable hvips-exe
+  main-is: Main.hs
+  hs-source-dirs:
+      app
+  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base >=4.7 && <5
+    , filepath
+    , haskell-gi-overloading ==0.0.*
+    , hvips
+    , optparse-applicative
+    , text
+  if false
+    other-modules:
+        Paths_hvips
+  default-language: Haskell2010
+
+test-suite hvips-test
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  other-modules:
+      Paths_hvips
+  hs-source-dirs:
+      test
+  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base >=4.7 && <5
+    , haskell-gi-overloading ==0.0.*
+    , hvips
+  default-language: Haskell2010
