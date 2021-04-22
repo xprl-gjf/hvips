@@ -18,7 +18,10 @@ module Vips
 import Control.Applicative (liftA2)
 import Control.Monad.Catch
 import qualified Data.Text as T
-import Data.GI.Base.ShortPrelude (MonadIO, liftIO, GValue, IsGValue, toGValue, fromGValue)
+import Data.GI.Base.ShortPrelude (MonadIO, liftIO)
+import Data.GI.Base.GValue (GValue, IsGValue)
+import qualified Data.GI.Base.GValue as GValue (toGValue, fromGValue, unsetGValue)
+import qualified Data.GI.Base.ManagedPtr as B.ManagedPtr
 import qualified GI.GObject.Objects.Object as GObject
 
 import Vips.VipsResult
@@ -65,7 +68,9 @@ loadImage f = do
     <|> error ("Failed to load image \"" <> f <> "\": unsupported image format.")
   imgOut <- V.imageNew
   let out = VArg "out" $ VImage imgOut
-  getOutput out result
+  result' <- getOutput out result
+  clearArg out
+  return result'
   where
     f' = T.pack f
     args = [VArg "filename" $ VText f']
@@ -75,8 +80,7 @@ invert :: Maybe V.Image -> VipsIO (Maybe V.Image)
 invert Nothing  = return Nothing
 invert (Just i) = do
   result <- callVips args "invert"
-  imgOut <- V.imageNew
-  let out = VArg "out" $ VImage imgOut
+  let out = VArg "out" $ VImage i
   getOutput out result
   where
     args = [VArg "in" $ VImage i]
@@ -85,9 +89,9 @@ invert (Just i) = do
 saveImage :: FilePath -> Maybe V.Image -> VipsIO ()
 saveImage _ Nothing = return ()
 saveImage f (Just i) = do
-  _ <- callVips args =<< V.foreignFindSave f'
+  result <- callVips args =<< V.foreignFindSave f'
     <|> error ("Unable to save image \"" <> f <> "\": unsupported image format.")
-  return ()
+  getNone result
   where
     f' = T.pack f
     args = [ VArg "in" $ VImage i
@@ -110,16 +114,24 @@ argName :: VArg -> ArgName
 argName (VArg a _) = a
 
 argGValue :: VArg -> IO GValue
-argGValue (VArg _ (VText t))  = toGValue (Just t)
-argGValue (VArg _ (VImage i)) = toGValue (Just i)
+argGValue (VArg _ (VText t))  = GValue.toGValue (Just t)
+argGValue (VArg _ (VImage i)) = GValue.toGValue (Just i)
+
+clearArg :: VArg -> VipsIO ()
+clearArg (VArg _ (VImage i)) = liftIO $ GObject.objectUnref i
+clearArg _                   = liftIO $ return ()
 
 callVips :: [VArg] -> T.Text -> VipsIO V.Operation
 callVips args name =
   runVips args =<< V.operationNew name
 
 runVips :: [VArg] -> V.Operation -> VipsIO V.Operation
-runVips args op =
-  setProperties args op >> V.cacheOperationBuild op
+runVips args op = do
+  setProperties args op
+  result <- V.cacheOperationBuild op
+  liftIO $ clearOp op
+  sequence_ $ clearArg <$> args
+  return result
 
 setProperties :: [VArg] -> V.Operation -> VipsIO ()
 setProperties args op = liftIO $
@@ -131,4 +143,15 @@ setProperties args op = liftIO $
 getOutput :: (IsGValue result) => VArg -> V.Operation -> VipsIO result
 getOutput arg op = liftIO $ argGValue arg >>= \v -> do
   GObject.objectGetProperty op (argName arg) v
-  fromGValue v
+  clearOp op
+  result <- GValue.fromGValue v
+  B.ManagedPtr.withManagedPtr v GValue.unsetGValue
+  return result
+
+getNone :: V.Operation -> VipsIO ()
+getNone = liftIO . clearOp
+
+clearOp :: V.Operation -> IO ()
+clearOp op = do
+  V.objectUnrefOutputs op
+  GObject.objectUnref op
