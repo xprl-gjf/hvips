@@ -63,6 +63,7 @@ executables:
     - hvips
     - optparse-applicative
     - text
+    - transformers
 
 tests:
   hvips-test:
