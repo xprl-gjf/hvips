@@ -1,5 +1,4 @@
-{-# LANGUAGE OverloadedStrings,
-             DataKinds, TypeFamilies, MultiParamTypeClasses,
+{-# LANGUAGE DataKinds, TypeFamilies, MultiParamTypeClasses,
              FlexibleInstances, FlexibleContexts,
              ScopedTypeVariables, AllowAmbiguousTypes #-}
 
