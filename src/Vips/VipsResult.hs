@@ -1,10 +1,8 @@
-{-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE NoImplicitPrelude #-}
 
 -- | Copyright (c) 2021 Gavin Falconer
 -- Maintainer: Gavin Falconer <gavin [at] expressivelogic [dot] net>
--- License :  LGPL-2.1
+-- License :  BSD-3
 
 module Vips.VipsResult where
 

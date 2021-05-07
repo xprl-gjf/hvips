@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 903a7fc950665c02deac675534c4b8839cf5a38d3ac2dc570df7d8c1d5599fec
+-- hash: 8aff4a2348197080cacf514620a5133b3a2bbb5be8a0928d57aac17b1516a547
 
 name:           hvips
 version:        0.1.0.0
@@ -28,9 +28,10 @@ source-repository head
 library
   exposed-modules:
       Vips
+      Vips.Internal.VipsOp
       Vips.Operations
-      Vips.VipsCall
       Vips.VipsIO
+      Vips.VipsOp
       Vips.VipsResult
   hs-source-dirs:
       src
@@ -61,6 +62,7 @@ executable hvips-exe
     , hvips
     , optparse-applicative
     , text
+    , transformers
   if false
     other-modules:
         Paths_hvips

@@ -1,58 +1,98 @@
-{-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE OverloadedStrings, OverloadedLabels,
+             DataKinds, TypeFamilies, MultiParamTypeClasses,
+             FlexibleInstances, FlexibleContexts,
+             ScopedTypeVariables, AllowAmbiguousTypes #-}
 
 -- | Copyright (c) 2021 Gavin Falconer
 -- Maintainer: Gavin Falconer <gavin [at] expressivelogic [dot] net>
--- License :  LGPL-2.1
+-- License :  BSD-3
 
 module Vips.Operations
   ( loadImage
   , saveImage
   , invert
+  , gaussBlur
+  , minAmpl
+  , (<&>)
   ) where
 
+import           Data.Function ((&))
 import qualified Data.Text as T
 
-import Vips.VipsCall
-import Vips.VipsIO
-import Vips.VipsResult
-import qualified GI.Vips as V
+import           GHC.OverloadedLabels (IsLabel(..))
+import           GHC.TypeLits (Symbol, KnownSymbol, symbolVal)
+
+import qualified GI.Vips as GV
+import           Vips.VipsOp
 
 --
 -- Vips image operations:
 --
-loadImage :: FilePath -> VipsIO (Maybe V.Image)
-loadImage f = do
-  result <- callVips args =<< V.foreignFindLoad f'
-    <|> error ("Failed to load image \"" <> f <> "\": unsupported image format.")
-  imgOut <- V.imageNew
-  let out = VArg "out" $ VImage imgOut
-  result' <- getOutput out result
-  clearArg out
-  return result'
+type LoadImage = VipsOp "foreignLoadImage" GV.Image
+
+loadImage :: FilePath -> LoadImage
+loadImage a = VipsOp { getOp = vipsForeignOp loader , getOutput = getProperty "out"} & setInputs
   where
-    f' = T.pack f
-    args = [VArg "filename" $ VText f']
+    filename = T.pack a
+    loader = GV.foreignFindLoad filename
+    setInputs = setInput "filename" filename
 
 
-invert :: Maybe V.Image -> VipsIO (Maybe V.Image)
-invert Nothing  = return Nothing
-invert (Just i) = do
-  result <- callVips args "invert"
-  let out = VArg "out" $ VImage i
-  getOutput out result
+type SaveImage = VipsOp "foreignSaveImage" ()
+
+saveImage :: FilePath -> GV.Image -> SaveImage
+saveImage a img = VipsOp { getOp = vipsForeignOp saver, getOutput = void } & setInputs
   where
-    args = [VArg "in" $ VImage i]
+    filename = T.pack a
+    saver = GV.foreignFindSave filename
+    setInputs = setInput "filename" filename . setInput "in" img
 
 
-saveImage :: FilePath -> Maybe V.Image -> VipsIO ()
-saveImage _ Nothing = return ()
-saveImage f (Just i) = do
-  result <- callVips args =<< V.foreignFindSave f'
-    <|> error ("Unable to save image \"" <> f <> "\": unsupported image format.")
-  getNone result
+type Invert = VipsOp "invert" GV.Image
+
+invert :: GV.Image -> Invert
+invert img = vipsOp (Lookup :: Nickname "invert") "out" & setInputs
   where
-    f' = T.pack f
-    args = [ VArg "in" $ VImage i
-           , VArg "filename" $ VText f'
-           ]
+    setInputs = setInput "in" img
+
+
+type GaussBlur = VipsOp "gaussBlur" GV.Image
+
+gaussBlur :: Double -> GV.Image -> GaussBlur
+gaussBlur sigma img = vipsOp (Lookup :: Nickname "gaussBlur") "out" & setInputs
+  where
+    setInputs = setInput "sigma" sigma . setInput "in" img
+
+instance HasAttribute GaussBlur "min_ampl" Double where set = apply
+
+
+--
+-- Attribute setters
+--
+
+data AttrName (l :: Symbol) = Set
+
+class HasAttribute a l b where
+  set :: AttrName l -> b -> a -> a
+
+apply :: (KnownSymbol l, IsVipsArg a) => AttrName l -> a -> VipsOp m b -> VipsOp m b
+apply l = setInput (attrName l)
+  where
+    attrName = T.pack . symbolVal
+
+instance (HasAttribute a l b) => IsLabel l (b -> a -> a) where
+  fromLabel = set (Set :: AttrName l)
+
+
+-- |Convenient reverse function application for applying attributes
+-- |to partially constructed Vips operations.
+--
+-- Example usage:
+--   gaussBlur 1.2 <&> min_ampl (1.8 :: Double)
+(<&>) :: (a -> b) -> (b -> b) -> (a -> b)
+infixl 4 <&>
+f <&> g = g . f
+
+
+minAmpl :: (HasAttribute a "min_ampl" b) => b -> a -> a
+minAmpl = #min_ampl
