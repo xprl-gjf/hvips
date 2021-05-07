@@ -60,13 +60,14 @@ gaussBlur sigma img = vipsOp (Lookup :: Nickname "gaussBlur") "out" & setInputs
 instance HasArgument GaussBlur "min_ampl" Double where set = apply
 
 --
--- Named argument hanlding:
+-- Named argument handling:
 --
 data Argument (l :: Symbol) = Set
 
 class HasArgument a l b where
   set :: Argument l -> b -> a -> a
 
+-- |Apply a named argument to a Vips operation
 apply :: (KnownSymbol l, IsVipsArg a) => Argument l -> a -> VipsOp m b -> VipsOp m b
 apply l = setInput (attrName l)
   where
@@ -74,9 +75,8 @@ apply l = setInput (attrName l)
 
 -- |Convenient reverse function application for applying attributes
 -- |to partially constructed Vips operations.
---
 -- Example usage:
---   gaussBlur 1.2 <&> min_ampl (1.8 :: Double)
+--   gaussBlur 1.2 <&> minAmpl (1.8 :: Double)
 (<&>) :: (a -> b) -> (b -> b) -> (a -> b)
 infixl 4 <&>
 f <&> g = g . f
