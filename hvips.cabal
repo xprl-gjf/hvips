@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 8aff4a2348197080cacf514620a5133b3a2bbb5be8a0928d57aac17b1516a547
+-- hash: b0a1f40d90f540946290bbc0f8d4535da6571d9e56195b2e1422869b2a7ba93c
 
 name:           hvips
 version:        0.1.0.0
@@ -29,10 +29,10 @@ library
   exposed-modules:
       Vips
       Vips.Internal.VipsOp
+      Vips.Internal.VipsResult
       Vips.Operations
       Vips.VipsIO
       Vips.VipsOp
-      Vips.VipsResult
   hs-source-dirs:
       src
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wpartial-fields -Wredundant-constraints

@@ -4,9 +4,7 @@
 -- License :  BSD-3
 
 module Vips
-  ( VipsInit(..)
-  , VipsIO(..)
-  , withVips
+  ( module Vips.VipsIO
   , module Vips.Operations
   , module Vips.VipsOp
   ) where

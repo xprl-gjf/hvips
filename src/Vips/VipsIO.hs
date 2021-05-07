@@ -1,6 +1,5 @@
-{-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
-{-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE OverloadedStrings, RecordWildCards,
+             GeneralizedNewtypeDeriving #-}
 
 -- | Copyright (c) 2021 Gavin Falconer
 -- Maintainer: Gavin Falconer <gavin [at] expressivelogic [dot] net>
@@ -12,12 +11,12 @@ module Vips.VipsIO
   , withVips
   ) where
 
-import Control.Applicative (liftA2)
-import Control.Monad.Catch (MonadThrow)
+import           Control.Applicative (liftA2)
+import           Control.Monad.Catch (MonadThrow)
 import qualified Data.Text as T
 import qualified Data.GI.Base.ShortPrelude as SP (MonadIO, liftIO)
 
-import Vips.VipsResult
+import           Vips.Internal.VipsResult
 import qualified GI.Vips as V
 
 --
