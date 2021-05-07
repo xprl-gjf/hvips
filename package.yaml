@@ -45,6 +45,7 @@ library:
     - gi-vips
     - haskell-gi-base
     - text
+    - transformers
 
 executables:
   hvips-exe:
@@ -63,7 +64,6 @@ executables:
     - hvips
     - optparse-applicative
     - text
-    - transformers
 
 tests:
   hvips-test:

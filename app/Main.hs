@@ -9,7 +9,6 @@ module Main where
 
 import qualified Data.Text as T
 import Control.Monad
-import Control.Monad.Trans.Maybe
 import Options.Applicative
 import System.Environment (getProgName)
 
@@ -56,10 +55,10 @@ runApp Args{..} = do
 -- |The applied image transformation;
 -- |saves an inverted, blurred copy of the source image
 processImage :: FilePath -> FilePath -> VipsIO (Maybe ())
-processImage inFile outFile = runMaybeT $ do
-  img <- MaybeT (runVips $ loadImage inFile)
-  img' <- MaybeT (runVips $ blur img)
-  img'' <- MaybeT (runVips $ invert img')
-  MaybeT (runVips $ saveImage outFile img'')
+processImage inFile outFile = runVips $
+      vips loadImage inFile
+  >>= vips blur
+  >>= vips invert
+  >>= vips (saveImage outFile)
     where
       blur = gaussBlur 1.2 <&> minAmpl (0.025 :: Double)

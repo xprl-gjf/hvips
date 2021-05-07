@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: b0a1f40d90f540946290bbc0f8d4535da6571d9e56195b2e1422869b2a7ba93c
+-- hash: 7c75fa478a37a1de3b01fadb463acd6cba588631b7ed86035d16c4cade047076
 
 name:           hvips
 version:        0.1.0.0
@@ -45,6 +45,7 @@ library
     , haskell-gi-base
     , haskell-gi-overloading ==0.0.*
     , text
+    , transformers
   if false
     other-modules:
         Paths_hvips
@@ -62,7 +63,6 @@ executable hvips-exe
     , hvips
     , optparse-applicative
     , text
-    , transformers
   if false
     other-modules:
         Paths_hvips
