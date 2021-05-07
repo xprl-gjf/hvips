@@ -25,14 +25,12 @@ data Args = Args
                                 --  Output image type is determined by the filename suffix.
   }
 
-
 -- |Parser for command line arguments
 argParse :: Parser Args
 argParse = Args
   <$> switch ( long "check-mem" <> short 'c' <> help "Enable vips memory leak checks" )
   <*> argument str (metavar "INPUT")
   <*> argument str (metavar "OUTPUT")
-
 
 main :: IO ()
 main = runApp =<< execParser opts
@@ -42,23 +40,26 @@ main = runApp =<< execParser opts
       <> progDesc "Process an input image and save as output"
       <> header "hvips-exe - sample app for haskell libvips bindings" )
 
-
 -- |Process the images specified by the command line args,
 -- |within the context of an initialized libvips env
 runApp :: Args -> IO ()
 runApp Args{..} = do
   progName <- T.pack <$> getProgName
   withVips VipsInit { progName, checkLeaks } $
-    void $ processImage inFile outFile
+    processImage inFile outFile
 
+-- ===========================
+-- the magic happens here...:
 
 -- |The applied image transformation;
 -- |saves an inverted, blurred copy of the source image
-processImage :: FilePath -> FilePath -> VipsIO (Maybe ())
-processImage inFile outFile = runVips $
+processImage :: FilePath -> FilePath -> VipsIO ()
+processImage inFile outFile = void . runVips $
       vips loadImage inFile
   >>= vips blur
   >>= vips invert
   >>= vips (saveImage outFile)
     where
       blur = gaussBlur 1.2 <&> minAmpl (0.025 :: Double)
+
+-- ===========================
