@@ -12,7 +12,7 @@ import Control.Monad
 import Options.Applicative
 import System.Environment (getProgName)
 
-import Vips
+import Vips hiding (switch)
 
 
 -- |Command line arguments
@@ -60,6 +60,6 @@ processImage inFile outFile = void . runVips $
   >>= vips invert
   >>= vips (saveImage outFile)
     where
-      blur = gaussBlur 1.2 <&> minAmpl (0.025 :: Double)
+      blur = gaussblur 1.2 <&> minAmpl' (0.025 :: Double)
 
 -- ===========================

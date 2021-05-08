@@ -1,4 +1,5 @@
-{-# LANGUAGE OverloadedStrings, RecordWildCards,
+{-# LANGUAGE OverloadedStrings,
+             RecordWildCards,
              GeneralizedNewtypeDeriving #-}
 
 -- | Copyright (c) 2021 Gavin Falconer
@@ -16,7 +17,7 @@ import           Control.Monad.Catch (MonadThrow)
 import qualified Data.Text as T
 import qualified Data.GI.Base.ShortPrelude as SP (MonadIO, liftIO)
 
-import           Vips.Internal.VipsResult
+import           Vips.Internal.VipsCResult
 import qualified GI.Vips as V
 
 --

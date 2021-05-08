@@ -4,7 +4,7 @@
 -- Maintainer: Gavin Falconer <gavin [at] expressivelogic [dot] net>
 -- License :  BSD-3
 
-module Vips.Internal.VipsResult where
+module Vips.Internal.VipsCResult where
 
 import Data.Int
 import qualified Data.Text as T

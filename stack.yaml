@@ -31,6 +31,7 @@ resolver:
 #   - wai
 packages:
 - .
+- hvips-gen
 
 # Dependency packages to be pulled from upstream that are not in the resolver.
 # These entries can reference officially published versions as well as
@@ -50,13 +51,14 @@ extra-deps:
 #  - haskell-gi-base-0.25.0@sha256:697f02ff63eb3659cd0e04f957100564ff3dfa73ac822c4f8856187ed083329f,2435
   - gi-gobject-2.0.26
   - gi-glib-2.0.25
-  - git: https://github.com/haskell-gi/haskell-gi.git
+  - github: haskell-gi/haskell-gi
     commit: fad0097a80b942137b7c423f6d9698fff4abeb28
     subdirs:
       - .
       - base
 # no need for GI OverloadedLabels support; see https://hackage.haskell.org/package/haskell-gi-overloading
   - haskell-gi-overloading-0.0@sha256:e1ba6583d908525af55f45ede17224a0fe5e7c8980bb5962ac39ee8b429e5bae,631
+
 # Override default flag values for local packages and extra-deps
 # flags: {}
 

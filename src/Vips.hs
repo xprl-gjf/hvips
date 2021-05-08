@@ -8,13 +8,15 @@ module Vips
   , runVips
   , module Vips.VipsIO
   , module Vips.Operations
+  , module Vips.Arguments
   ) where
 
 import Vips.VipsIO
 import Vips.Operations
+import Vips.Arguments
 
 import Control.Monad.Trans.Maybe (MaybeT(..))
-import qualified Vips.VipsOp as V
+import qualified Vips.Internal.VipsOp as V
 
 
 -- |Execute a chain of bound vips operations
@@ -23,6 +25,6 @@ runVips = runMaybeT
 
 -- |Combinator to execute a VipsOp within a chain of bound operations.
 -- Example usage:
---   runMaybeT $ vips loadImage inFile >>= vips invert
+--   runVips $ vips loadImage inFile >>= vips invert
 vips :: (a -> V.VipsOp l b) -> (a -> MaybeT VipsIO b)
 vips f = MaybeT . V.runVips . f

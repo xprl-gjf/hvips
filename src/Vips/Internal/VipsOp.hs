@@ -1,112 +1,82 @@
-{-# LANGUAGE DataKinds, AllowAmbiguousTypes,
-             ScopedTypeVariables, TypeApplications #-}
+{-# LANGUAGE DataKinds, KindSignatures,
+             MultiParamTypeClasses #-}
 
 -- | Copyright (c) 2021 Gavin Falconer
 -- Maintainer: Gavin Falconer <gavin [at] expressivelogic [dot] net>
 -- License :  BSD-3
 
 module Vips.Internal.VipsOp
-        ( IsVipsArg, toGValue, clearArg
-        , IsVipsOutput, gValueType, fromGValue
-        , setProperty, getProperty, getNone
-        , vipsOp, vipsForeignOp, runOp
+        ( Nickname(..)
+        , VipsResult, getProperty
+        , VipsOp, setInput, setOutput, void
+        , V.IsVipsArg, V.IsVipsOutput
+        , vipsOp, vipsForeignOp
+        , runVips
         )
 where
 
 import qualified  Data.Text as T
-
-import            Data.GI.Base.ShortPrelude (liftIO, GType)
-import            Data.GI.Base.GType (gtypeInvalid)
-import            Data.GI.Base.GValue (GValue)
-import qualified  Data.GI.Base.GValue as GValue (toGValue, fromGValue, newGValue, unsetGValue, gvalueGType_)
-import qualified  Data.GI.Base.ManagedPtr as B.ManagedPtr
-import qualified  GI.GObject.Objects.Object as GObject
-import qualified  GI.Vips as GV
+import            GHC.TypeLits (KnownSymbol, Symbol, symbolVal)
 
 import            Vips.VipsIO
+import qualified  Vips.Internal.VipsOp.GI as V
+import qualified  GI.Vips as GV (Operation)
 
---
--- Vips operations FFI via GObject introspection
---
+-- |Symbolic name for a Vips operation
+data Nickname (l :: Symbol) = Lookup | Foreign
 
--- |Values that may be used as an input to a vips operation
-class IsVipsArg a where
-  toGValue :: a -> IO GValue
-  clearArg :: a -> IO ()
+-- |Type-safe wrapper for a built (and executed) Operation
+newtype VipsResult = VipsResult { fromResult :: GV.Operation }
 
-instance IsVipsArg Double where
-  toGValue = GValue.toGValue
-  clearArg _ = return ()
-
-instance IsVipsArg T.Text where
-  toGValue = GValue.toGValue . Just
-  clearArg _ = return ()                -- TODO: confirm if this needs GObject.objectUnref or some such
-
-instance IsVipsArg GV.Image where
-  toGValue = GValue.toGValue . Just
-  clearArg = GObject.objectUnref
+-- |Get a result output property
+getProperty :: (V.IsVipsOutput a) => T.Text -> VipsResult -> VipsIO (Maybe a)
+getProperty t x = V.getProperty t (fromResult x)
 
 
--- |Values that may be retrieved as outputs from a vips operation
-class IsVipsOutput a where
-  gValueType :: IO GType
-  fromGValue :: GValue -> IO (Maybe a)
+-- |A named Vips operation
+data VipsOp (l :: Symbol) a = VipsOp
+        { getOp :: VipsIO GV.Operation                   -- ^construct the Vips operation
+        , getOutput :: VipsResult -> VipsIO (Maybe a)  -- ^get the result from the Vips operation
+        }
 
--- |This is never used, but is necessary to allow IsVipsOp instances
-instance IsVipsOutput () where
-  gValueType = return gtypeInvalid
-  fromGValue _ = return $ Just ()
+-- |Constructor for a named vips operation
+vipsOp :: (KnownSymbol l) => Nickname l -> VipsOp l a
+vipsOp l = VipsOp { getOp = V.vipsOp (opName l), getOutput = const $ return Nothing }
+  where
+    opName = T.pack . symbolVal
 
-instance IsVipsOutput GV.Image where
-  gValueType = GValue.gvalueGType_ @(Maybe GV.Image)
-  fromGValue = GValue.fromGValue
+-- |Constructor for a vips foreign operation
+vipsForeignOp :: VipsIO T.Text -> Nickname l -> VipsOp l a
+vipsForeignOp f _ = VipsOp { getOp = V.vipsForeignOp f, getOutput = const $ return Nothing }
 
+-- |Execute a VipsOp and return the result
+runVips :: VipsOp l a -> VipsIO (Maybe a)
+runVips op = VipsResult <$> (getOp op >>= V.runOp) >>= getOutput op
 
-type Op = GV.Operation
+-- |Set an input argument value on a VipsOp
+setInput :: (V.IsVipsArg a) =>
+  T.Text ->       -- ^the argument name
+  a ->            -- ^the argument value
+  VipsOp l b ->   -- ^the operation to which the argument will be applied
+  VipsOp l b      -- ^returns the modified operation
+setInput t a v = v { getOp = getOp' }
+  where
+    getOp' = getOp v >>= V.setProperty t a
 
--- |Construct a named vips operation
-vipsOp :: T.Text -> VipsIO Op
-vipsOp = mkOp'
+-- |Set the result output function for a VipsOp
+setOutput :: 
+  (VipsResult -> VipsIO (Maybe a)) ->   -- ^the result output function
+  VipsOp l a ->                         -- ^the operation from which the result will be retrieved
+  VipsOp l a
+setOutput x op = op { getOutput = x }
 
--- |Construct a vips foreign operation;
---  that is, an operation whose name is derived by some libvips foreign helper function
-vipsForeignOp :: VipsIO T.Text -> VipsIO Op
-vipsForeignOp f = mkOp' =<< f
+-- |Set the result function for a VipsOp that has no return value
+void :: VipsOp l () -> VipsOp l ()
+void op = op { getOutput = returnVoid' }
 
-mkOp' :: T.Text -> VipsIO Op
-mkOp' = GV.operationNew
-
--- |Execute a vips operation
-runOp :: Op -> VipsIO Op
-runOp op = liftIO $ do
-  result <- GV.cacheOperationBuild op
-  clearOp' op
-  return result
-
--- |Clear the GObject references for a vips operation
-clearOp' :: Op -> IO ()
-clearOp' op = do
-  GV.objectUnrefOutputs op
-  GObject.objectUnref op
-
-setProperty :: (IsVipsArg a) => T.Text -> a -> Op -> VipsIO Op
-setProperty l a op = liftIO $ do
-  GObject.objectSetProperty op l =<< toGValue a
-  clearArg a
-  return op
-
-getProperty :: forall a. (IsVipsOutput a) => T.Text -> Op -> VipsIO (Maybe a)
-getProperty l op = liftIO $ do
-  v <- GValue.newGValue =<< gValueType @a
-  GObject.objectGetProperty op l v
-  result <- fromGValue v
-  B.ManagedPtr.withManagedPtr v GValue.unsetGValue
-  clearOp' op
-  return result
-
--- |Alternative to `getProperty` for vips operations that
--- |do not return a result.
---  N.B. some result function _must_ be called to clear the
---  GObject references.
-getNone :: Op -> VipsIO ()
-getNone op = liftIO $ clearOp' op
+-- |Convenient return value function for a VipsOp
+-- |that has no result.
+--  N.B. some return value function _must_ be called to ensure that the
+--  underlying GObject is unreferenced and disposed.
+returnVoid' :: VipsResult -> VipsIO (Maybe ())
+returnVoid' = fmap Just . V.getNone . fromResult

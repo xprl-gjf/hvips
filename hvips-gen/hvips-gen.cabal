@@ -4,18 +4,17 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: ea670ebdd70165d5cdad42e5bc655c67e5aed1f429a262398ff1e2f4a2cb7aa8
+-- hash: f0e78be035eece1d3c2c29a908d3be05e32d077b059e1e85088a7fce6d99be34
 
-name:           hvips
+name:           hvips-gen
 version:        0.1.0.0
-description:    Please see the README on GitHub at <https://github.com/xprl-gjf/hvips#readme>
+description:    Please see the README on GitHub at <https://github.com/xprl-gjf/hvips/hvips-gen#readme>
 homepage:       https://github.com/xprl-gjf/hvips#readme
 bug-reports:    https://github.com/xprl-gjf/hvips/issues
 author:         Gavin Falconer
 maintainer:     <gavin [at] expressivelogic [dot] net>
 copyright:      2021 Gavin Falconer
 license:        BSD3
-license-file:   LICENSE
 build-type:     Simple
 extra-source-files:
     README.md
@@ -27,61 +26,42 @@ source-repository head
 
 library
   exposed-modules:
-      Vips
-      Vips.Arguments
-      Vips.Internal.VipsCResult
-      Vips.Internal.VipsOp
-      Vips.Internal.VipsOp.GI
-      Vips.Introspection.Operations
-      Vips.Operations
-      Vips.Results
-      Vips.VipsIO
+      Introspect
   hs-source-dirs:
       src
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wpartial-fields -Wredundant-constraints
   build-depends:
       base >=4.7 && <5
-    , convertible
-    , exceptions
     , filepath
     , gi-gobject
     , gi-vips
     , haskell-gi-base
     , haskell-gi-overloading ==0.0.*
     , text
-    , transformers
   if false
     other-modules:
-        Paths_hvips
+        Paths_hvips_gen
   default-language: Haskell2010
 
-executable hvips-exe
+executable hvips-gen
   main-is: Main.hs
   hs-source-dirs:
       app
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base >=4.7 && <5
+    , casing
+    , containers
     , filepath
+    , gi-gobject
+    , gi-vips
+    , haskell-gi-base
     , haskell-gi-overloading ==0.0.*
-    , hvips
+    , hvips-gen
     , optparse-applicative
+    , shakespeare
     , text
   if false
     other-modules:
-        Paths_hvips
-  default-language: Haskell2010
-
-test-suite hvips-test
-  type: exitcode-stdio-1.0
-  main-is: Spec.hs
-  other-modules:
-      Paths_hvips
-  hs-source-dirs:
-      test
-  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
-  build-depends:
-      base >=4.7 && <5
-    , haskell-gi-overloading ==0.0.*
-    , hvips
+        Paths_hvips_gen
   default-language: Haskell2010

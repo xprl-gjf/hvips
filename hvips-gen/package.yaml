@@ -1,4 +1,4 @@
-name:                hvips
+name:                hvips-gen
 version:             0.1.0.0
 github:              "xprl-gjf/hvips"
 license:             BSD3
@@ -17,7 +17,7 @@ extra-source-files:
 # To avoid duplicated efforts in documentation and dealing with the
 # complications of embedding Haddock markup inside cabal files, it is
 # common to point users to the README.md file.
-description:         Please see the README on GitHub at <https://github.com/xprl-gjf/hvips#readme>
+description:         Please see the README on GitHub at <https://github.com/xprl-gjf/hvips/hvips-gen#readme>
 
 dependencies:
 - base >= 4.7 && < 5
@@ -37,23 +37,20 @@ library:
   # disable generation of Paths_hvips in .cabal
   when:
     - condition: false
-      other-modules: Paths_hvips
+      other-modules: Paths_hvips_gen
   dependencies:
-    - convertible
-    - exceptions
     - filepath
     - gi-gobject
     - gi-vips
     - haskell-gi-base
     - text
-    - transformers
 
 executables:
-  hvips-exe:
+  hvips-gen:
     # disable generation of Paths_hvips in .cabal
     when:
       - condition: false
-        other-modules: Paths_hvips
+        other-modules: Paths_hvips_gen
     main:                Main.hs
     source-dirs:         app
     ghc-options:
@@ -61,18 +58,13 @@ executables:
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:
+    - casing
+    - containers
     - filepath
-    - hvips
+    - gi-gobject
+    - gi-vips
+    - haskell-gi-base
+    - hvips-gen
     - optparse-applicative
+    - shakespeare
     - text
-
-tests:
-  hvips-test:
-    main:                Spec.hs
-    source-dirs:         test
-    ghc-options:
-    - -threaded
-    - -rtsopts
-    - -with-rtsopts=-N
-    dependencies:
-    - hvips

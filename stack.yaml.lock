@@ -26,31 +26,31 @@ packages:
   original:
     hackage: gi-glib-2.0.25
 - completed:
+    size: 1189719
     subdir: .
+    url: https://github.com/haskell-gi/haskell-gi/archive/fad0097a80b942137b7c423f6d9698fff4abeb28.tar.gz
     name: haskell-gi
     version: 0.25.0
-    git: https://github.com/haskell-gi/haskell-gi.git
+    sha256: afa987932131ac8b7ab8c73517a56aa93c78cce7ceaa38877fcf1e1687d5e78c
     pantry-tree:
       size: 33296
       sha256: 7490124aa7cd861e9a206f615e72c1d7225b59db134f500f1926bff06b6d2595
-    commit: fad0097a80b942137b7c423f6d9698fff4abeb28
   original:
     subdir: .
-    git: https://github.com/haskell-gi/haskell-gi.git
-    commit: fad0097a80b942137b7c423f6d9698fff4abeb28
+    url: https://github.com/haskell-gi/haskell-gi/archive/fad0097a80b942137b7c423f6d9698fff4abeb28.tar.gz
 - completed:
+    size: 1189719
     subdir: base
+    url: https://github.com/haskell-gi/haskell-gi/archive/fad0097a80b942137b7c423f6d9698fff4abeb28.tar.gz
     name: haskell-gi-base
     version: 0.25.0
-    git: https://github.com/haskell-gi/haskell-gi.git
+    sha256: afa987932131ac8b7ab8c73517a56aa93c78cce7ceaa38877fcf1e1687d5e78c
     pantry-tree:
       size: 2138
       sha256: 1640e2cb43b3229daee43faf4d6cd67568705ded12570dc95073a98d6fa54520
-    commit: fad0097a80b942137b7c423f6d9698fff4abeb28
   original:
     subdir: base
-    git: https://github.com/haskell-gi/haskell-gi.git
-    commit: fad0097a80b942137b7c423f6d9698fff4abeb28
+    url: https://github.com/haskell-gi/haskell-gi/archive/fad0097a80b942137b7c423f6d9698fff4abeb28.tar.gz
 - completed:
     hackage: haskell-gi-overloading-0.0@sha256:e1ba6583d908525af55f45ede17224a0fe5e7c8980bb5962ac39ee8b429e5bae,631
     pantry-tree:
