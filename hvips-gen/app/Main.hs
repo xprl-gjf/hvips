@@ -417,15 +417,18 @@ operationOutputs :: Nickname -> ArgList -> T.Text
 operationOutputs n = operationArgs' n "HasOutput" outputs
 
 operationArgs' :: Nickname -> T.Text -> (ArgList -> ArgList) -> ArgList -> T.Text
-operationArgs' n inst f args = T.intercalate "" $ arg <$> f args
+operationArgs' n inst f args = mconcat $ arg <$> f args
   where
-    arg a = [sbt|instance #{inst} #{t} "#{name a}" #{toHaskell (typename a)}#{blurb' a}|]
+    arg a = padded' (arg' a) <> blurb' a <> "\n"
+    arg' a = [st|instance #{inst} #{t} "#{name a}" #{toHaskell (typename a)}  |]
+    padded' x' = (x' <>) . T.pack . padding'' $ length (T.unpack x')
+    padding'' n' = if n' >60 then "" else replicate (60 - n') ' '
     t = toTypename n
 
 blurb' :: VipsOperationArgInfo -> T.Text
 blurb' a = case blurb a of
   Nothing -> ""
-  Just b -> [st|		-- ^#{b}|]
+  Just b -> [st|-- ^#{b}|]
 
 params :: ArgList -> ArgList
 params = sortOn (Ord.Down . priority) . filter (isParam . argumentFlags)

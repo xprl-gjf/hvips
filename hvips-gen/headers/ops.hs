@@ -12,7 +12,6 @@ module Vips.Operations
   ) where
 
 import           Data.Int
-import           Data.Word
 import           Data.Function ((&))
 import qualified Data.Text as T
 
