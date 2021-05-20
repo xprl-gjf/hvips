@@ -13,7 +13,8 @@ Available options:
   -h,--help                Show this help text
 
 Available commands:
-  ops                      Generate content for Introspection/Operations.hs
+  types                    Generate content for Introspection/Operations.hs
+  ops                      Generate content for Operations.hs
   args                     Generate content for Arguments.hs
   results                  Generate content for Results.hs
 ```
@@ -27,7 +28,9 @@ All the generated code for hvips can be created using the following script:
 # Execute in the root directory of the hvips git repository.
 #
 echo "Generating Vips/Introspection/Operations.hs..." && \
-stack exec hvips-gen -- -f hvips-gen/headers/ops.hs ops > src/Vips/Introspection/Operations.hs && \
+stack exec hvips-gen -- -f hvips-gen/headers/types.hs types > src/Vips/Introspection/Operations.hs && \
+echo "Generating Vips/Operations.hs..." && \
+stack exec hvips-gen -- -f hvips-gen/headers/ops.hs ops > src/Vips/Operations.hs && \
 echo "Generating Vips/Arguments.hs..." && \
 stack exec hvips-gen -- -f hvips-gen/headers/args.hs args > src/Vips/Arguments.hs && \
 echo "Generating Vips/Results.hs..." && \
