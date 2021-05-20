@@ -29,6 +29,11 @@ import           Vips.VipsIO
 outOut :: (Result a ~ Double, HasOutput a "out" Double) => a -> a
 outOut = get (Get :: Argument "out")
 
+--
+-- The following code has been automatically generated using hvips-gen,
+-- from libvips 8.10.6-Sat Apr 24 19:02:40 UTC 2021
+--
+
 
 outAngle :: (Result a ~ GV.Angle, HasOutput a "angle" GV.Angle) => a -> a
 outAngle = get (Get :: Argument "angle")

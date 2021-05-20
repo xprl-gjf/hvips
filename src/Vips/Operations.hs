@@ -55,6 +55,11 @@ saveImage a b = vipsForeignOp saver (Foreign :: Nickname "foreignSaveImage") & i
 -- Vips image operations:
 --
 
+--
+-- The following code has been automatically generated using hvips-gen,
+-- from libvips 8.10.6-Sat Apr 24 19:02:40 UTC 2021
+--
+
 
 -- |global balance an image mosaic
 globalbalance :: GV.Image ->  Globalbalance

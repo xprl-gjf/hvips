@@ -20,6 +20,11 @@ import           Vips.Introspection.Operations
 -- "imgs" is used as a synonym for "in" for an array of images
 -- since `in` is a Haskell reserved word
 
+--
+-- The following code has been automatically generated using hvips-gen,
+-- from libvips 8.10.6-Sat Apr 24 19:02:40 UTC 2021
+--
+
 
 a' :: (HasArgument a "a" b) => b -> a -> a
 a' = set (Set :: Argument "a")

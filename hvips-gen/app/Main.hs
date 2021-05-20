@@ -76,8 +76,10 @@ runApp :: Options -> IO ()
 runApp options = do
   header' <- readHeader . headerFile $ options
   initVips
+  version' <- V.versionString
   ops <- findOps
   T.putStrLn header'
+  T.putStrLn $ versionInfo version'
   flip runCommand ops . genCommand $ options
   shutdownVips
     where
@@ -85,6 +87,13 @@ runApp options = do
       findOps = validNicknames =<< allNicknames =<< listVipsOperations
       shutdownVips = V.shutdown
 
+versionInfo :: T.Text -> T.Text
+versionInfo v =
+  [sbt|--
+      |-- The following code has been automatically generated using hvips-gen,
+      |-- from libvips #{v}
+      |--
+      |]
 
 printTypes :: [Nickname] -> IO ()
 printTypes ops = sequence_ $ printType <$> ops
