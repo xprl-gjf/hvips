@@ -119,8 +119,9 @@ printType n = do
 printOp :: Nickname -> IO ()
 printOp n = do
   args <- lookupArgs n
+  description <- lookupDescription n
   T.putStrLn ""
-  T.putStr $ operationFn n args
+  T.putStr $ operationFn n description args
 
 printArg :: VipsOperationArgInfo -> IO ()
 printArg a = do
@@ -149,9 +150,16 @@ lookupOp (Nickname n) = do
     Left _ -> return Nothing
     Right (nick, flags)  -> return $ unlessDeprecated nick flags
 
+lookupDescription :: Nickname -> IO T.Text
+lookupDescription n = do
+  op <- V.operationNew . unNickname $ n
+  desc <- V.objectGetDescription op
+  GObject.objectUnref op
+  return desc
+
 lookupArgs :: Nickname -> IO ArgList
 lookupArgs n = do
-  op <- V.operationNew. unNickname $ n
+  op <- V.operationNew . unNickname $ n
   args <- listVipsOperationArgs op
   GObject.objectUnref op
   return args
@@ -345,9 +353,10 @@ operationResult'' _ [] = "()"
 operationResult'' _ [x] = toHaskell . typename $ x
 operationResult'' n _ = unTypename n <> "Result"
 
-operationFn :: Nickname -> ArgList -> T.Text
-operationFn n args =
-  [sbt|#{funcname'} :: #{params'} #{result'}
+operationFn :: Nickname -> T.Text -> ArgList -> T.Text
+operationFn n desc args =
+  [sbt|-- |#{desc}
+      |#{funcname'} :: #{params'} #{result'}
       |#{funcname'} #{params''} = vipsOp (Lookup :: Nickname "#{n}") & inputs & outputs
       |  where
       |    inputs = #{inputs'}
