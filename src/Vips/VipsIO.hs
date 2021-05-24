@@ -14,6 +14,7 @@ module Vips.VipsIO
   ) where
 
 import           Control.Applicative (liftA2)
+import           Control.Exception (finally)
 import           Control.Monad.Catch (MonadThrow)
 import qualified Data.Text as T
 import qualified Data.GI.Base.ShortPrelude as SP (MonadIO, liftIO)
@@ -49,12 +50,17 @@ instance (Monoid a) => Monoid (VipsIO a) where
 -- | Run in IO the action that requires an initialized
 -- | libvips environment
 withVips :: (SP.MonadIO m) => VipsInit -> VipsIO a -> m a
-withVips VipsInit{..} f = SP.liftIO $ do
+withVips x f = SP.liftIO $ do
+  init' x
+  flip finally shutdown' $ unVips f
+
+init' :: VipsInit -> IO ()
+init' VipsInit{..} = do
   _ <- V.init progName <|> error "Failed to initialise libvips"
   leakSet' checkLeaks
-  result <- unVips f
-  V.shutdown
-  return result
   where
     leakSet' Enabled = V.leakSet True
     leakSet' Default = return ()
+
+shutdown' :: IO ()
+shutdown' = V.shutdown
