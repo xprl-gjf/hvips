@@ -8,12 +8,10 @@ module Vips
   , runVips
   , module Vips.VipsIO
   , module Vips.Operations
-  , module Vips.Arguments
   ) where
 
 import Vips.VipsIO
 import Vips.Operations
-import Vips.Arguments
 
 import Control.Monad.Trans.Maybe (MaybeT(..))
 import qualified Vips.Internal.VipsOp as V

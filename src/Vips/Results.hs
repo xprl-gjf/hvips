@@ -31,7 +31,7 @@ outOut = get (Get :: Argument "out")
 
 --
 -- The following code has been automatically generated using hvips-gen,
--- from libvips 8.10.6-Sat Apr 24 19:02:40 UTC 2021
+-- from libvips 8.10.6-Tue May 18 11:07:36 UTC 2021
 --
 
 

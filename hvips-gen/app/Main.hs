@@ -258,7 +258,7 @@ toArgname a = toArgname' . T.unpack . name $ a
 toArgname' :: String -> Argname
 toArgname' a@(x:_)
   | isAsciiUpper x = Argname . T.pack . (<> "_") . TC.camel $ a
-  | otherwise = Argname . T.pack . (<> "'") . TC.camel $ a
+  | otherwise = Argname . T.pack . TC.camel $ a
 toArgname' [] = Argname ""
 
 toOutname :: VipsOperationArgInfo -> Outname
