@@ -17,18 +17,18 @@ import Vips hiding (switch)
 
 -- |Command line arguments
 data Args = Args
-  { checkLeaks :: !Bool         -- ^Enable vips GObject reference leak checking
-  , inFile     :: !FilePath     -- ^Input file path, possibly with load options appended
-                                --  e.g. "/path/to/image.jpg[Q=90,strip]"
-                                --  Image image type is deduced by libvips sniffing the first few bytes.
-  , outFile    :: !FilePath     -- ^Output file path.
-                                --  Output image type is determined by the filename suffix.
+  { checkLeaks :: !VipsCheckLeaks   -- ^Enable vips GObject reference leak checking
+  , inFile     :: !FilePath         -- ^Input file path, possibly with load options appended
+                                    --  e.g. "/path/to/image.jpg[Q=90,strip]"
+                                    --  Image image type is deduced by libvips sniffing the first few bytes.
+  , outFile    :: !FilePath         -- ^Output file path.
+                                    --  Output image type is determined by the filename suffix.
   }
 
 -- |Parser for command line arguments
 argParse :: Parser Args
 argParse = Args
-  <$> switch ( long "check-mem" <> short 'c' <> help "Enable vips memory leak checks" )
+  <$> flag Default Enabled ( long "check-mem" <> short 'c' <> help "Enable vips memory leak checks" )
   <*> argument str (metavar "INPUT")
   <*> argument str (metavar "OUTPUT")
 

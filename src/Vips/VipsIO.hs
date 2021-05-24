@@ -9,6 +9,7 @@
 module Vips.VipsIO
   ( VipsInit(..)
   , VipsIO(..)
+  , VipsCheckLeaks(..)
   , withVips
   ) where
 
@@ -24,10 +25,14 @@ import qualified GI.Vips as V
 -- vipslib initialization and VipsIO monad
 --
 
+-- | config setting for libvips object leak checking
+data VipsCheckLeaks = Enabled       -- ^explicitly enable vips object leak checking
+                    | Default       -- ^inherit vips object leak checking from the VIPS_LEAK env var
+
 -- | libvips initialization parameters.
 data VipsInit = VipsInit
-  { checkLeaks  :: !Bool      -- ^enable or disable vips object leak checking
-  , progName    :: !T.Text    -- ^the program name passed to libvips as argv[0]
+  { checkLeaks  :: !VipsCheckLeaks  -- ^enable or disable vips object leak checking
+  , progName    :: !T.Text          -- ^the program name passed to libvips as argv[0]
   }
 
 -- | The VipsIO monad, representing a context having an
@@ -46,7 +51,10 @@ instance (Monoid a) => Monoid (VipsIO a) where
 withVips :: (SP.MonadIO m) => VipsInit -> VipsIO a -> m a
 withVips VipsInit{..} f = SP.liftIO $ do
   _ <- V.init progName <|> error "Failed to initialise libvips"
-  V.leakSet checkLeaks
+  leakSet' checkLeaks
   result <- unVips f
   V.shutdown
   return result
+  where
+    leakSet' Enabled = V.leakSet True
+    leakSet' Default = return ()
