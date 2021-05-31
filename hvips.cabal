@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 8e9fc834ee8ce6e2af9ccbc46974f70ecbd217edf5e7b5cf1de1231444e1b476
+-- hash: 728209a1e4ed203c8f3f5894ae9e81c102f9b7abc4c8a36e01264e771d30f6d1
 
 name:           hvips
 version:        0.1.0.0
