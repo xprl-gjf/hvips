@@ -8,14 +8,15 @@
 
 module Vips.VipsIO
   ( VipsInit(..)
-  , VipsIO(..)
   , VipsCheckLeaks(..)
+  , VipsIO(..)
   , withVips
   ) where
 
 import           Control.Applicative (liftA2)
 import           Control.Exception (finally)
 import           Control.Monad.Catch (MonadThrow)
+import           Control.Monad.IO.Unlift (MonadUnliftIO(..))
 import qualified Data.Text as T
 import qualified Data.GI.Base.ShortPrelude as SP (MonadIO, liftIO)
 
@@ -38,8 +39,12 @@ data VipsInit = VipsInit
 
 -- | The VipsIO monad, representing a context having an
 -- | initialized libvips environment within the IO monad.
-newtype VipsIO a = VipsIO { unVips :: IO a }
+newtype VipsIO a = VipsIO { runVips :: IO a }
   deriving (Functor, Applicative, Monad, SP.MonadIO, MonadThrow)
+
+instance MonadUnliftIO VipsIO where
+  -- withRunInIO :: ((forall a. m a -> IO a) -> IO b) -> m b
+  withRunInIO inner = VipsIO $ inner runVips
 
 instance (Semigroup a) => Semigroup (VipsIO a) where
   (<>) = liftA2(<>)
@@ -52,7 +57,7 @@ instance (Monoid a) => Monoid (VipsIO a) where
 withVips :: (SP.MonadIO m) => VipsInit -> VipsIO a -> m a
 withVips x f = SP.liftIO $ do
   init' x
-  flip finally shutdown' $ unVips f
+  flip finally shutdown' $ runVips f
 
 init' :: VipsInit -> IO ()
 init' VipsInit{..} = do

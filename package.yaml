@@ -47,6 +47,7 @@ library:
     - haskell-gi-base
     - text
     - transformers
+    - unliftio-core
 
 executables:
   hvips-exe:
@@ -75,4 +76,9 @@ tests:
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:
+    - haskell-gi-base
+    - gi-glib
+    - gi-vips
+    - hspec
     - hvips
+    - transformers
