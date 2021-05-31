@@ -1,4 +1,6 @@
-{-# LANGUAGE DataKinds, AllowAmbiguousTypes,
+{-# LANGUAGE OverloadedStrings,
+             DataKinds, AllowAmbiguousTypes,
+             FlexibleContexts,
              ScopedTypeVariables, TypeApplications #-}
 
 -- | Copyright (c) 2021 Gavin Falconer
@@ -13,11 +15,14 @@ module Vips.Internal.VipsOp.GI
         )
 where
 
+import qualified  Control.Exception as E
+import            Control.Monad ((<=<))
 import            Data.Convertible.Base
 import            Data.Convertible.Instances.C ()
 import            Data.Int
 import            Data.Word
 import qualified  Data.Text as T
+import qualified  GHC.Stack as S
 
 import            Data.GI.Base.ShortPrelude (liftIO, GType)
 import            Data.GI.Base.GType (gtypeInvalid)
@@ -32,6 +37,7 @@ import qualified  GI.GObject.Objects.Object as GObject
 import qualified  GI.Vips as GV
 
 import            Vips.VipsIO
+import            Vips.VipsException
 
 --
 -- Vips operations FFI via GObject Introspection
@@ -209,43 +215,43 @@ enumToGValue x t = GValue.buildGValue t set x
 --
 class IsVipsOutput a where
   gValueType :: IO GType
-  fromGValue :: GValue -> IO (Maybe a)
+  fromGValue :: GValue -> IO a
 
 instance IsVipsOutput () where        -- ^this is never used, but is necessary to allow IsVipsOp instances
   gValueType = return gtypeInvalid
-  fromGValue _ = return $ Just ()
+  fromGValue _ = return ()
 
 instance IsVipsOutput Bool where
   gValueType = GValue.gvalueGType_ @Bool
-  fromGValue = fmap Just . GValue.fromGValue
+  fromGValue = GValue.fromGValue
 
 instance IsVipsOutput Int32 where
   gValueType = GValue.gvalueGType_ @Int32
-  fromGValue = fmap Just . GValue.fromGValue
+  fromGValue = GValue.fromGValue
 
 instance IsVipsOutput Double where
   gValueType = GValue.gvalueGType_ @Double
-  fromGValue = fmap Just . GValue.fromGValue
+  fromGValue = GValue.fromGValue
 
 instance IsVipsOutput T.Text where
   gValueType = GValue.gvalueGType_ @(Maybe T.Text)
-  fromGValue = GValue.fromGValue
+  fromGValue = fromMaybeGValue'
 
 instance IsVipsOutput GV.Image where
   gValueType = GValue.gvalueGType_ @(Maybe GV.Image)
-  fromGValue = GValue.fromGValue
+  fromGValue = fromMaybeGValue'
 
 instance IsVipsOutput GV.ArrayInt where
   gValueType = GValue.gvalueGType_ @(Maybe GV.ArrayInt)
-  fromGValue = GValue.fromGValue
+  fromGValue = fromMaybeGValue'
 
 instance IsVipsOutput GV.ArrayDouble where
   gValueType = GValue.gvalueGType_ @(Maybe GV.ArrayDouble)
-  fromGValue = GValue.fromGValue
+  fromGValue = fromMaybeGValue'
 
 instance IsVipsOutput GV.Blob where
   gValueType = GValue.gvalueGType_ @(Maybe GV.Blob)
-  fromGValue = GValue.fromGValue
+  fromGValue = fromMaybeGValue'
 
 instance IsVipsOutput GV.Angle where
   gValueType = GV.glibType @GV.Angle
@@ -257,6 +263,17 @@ instance IsVipsOutput GV.ForeignFlags where
   -- FIXME
   fromGValue = undefined
 
+fromMaybeGValue' :: (IsVipsOutput a, GV.IsGValue (Maybe a)) => GValue -> IO a
+fromMaybeGValue' = fromMaybe' <=< GValue.fromGValue
+
+fromMaybe' :: forall a. (S.HasCallStack, IsVipsOutput a) => Maybe a -> IO a
+fromMaybe' (Just x) = return x
+fromMaybe' Nothing = do
+  typeName <- GV.gtypeName =<< gValueType @a
+  E.throwIO . VipsException . T.pack $
+    "Empty vips operation result. "
+    <> "Expected a value of type \"" <> typeName <> "\", got Nothing."
+    <> S.prettyCallStack S.callStack
 
 
 type Op = GV.Operation
@@ -277,7 +294,7 @@ mkOp' = GV.operationNew
 runOp :: Op -> VipsIO Op
 runOp op = liftIO $ do
   result <- GV.cacheOperationBuild op
-  clearOp' op
+  clearOp' op     -- on success, the operation is now referenced by the cache
   return result
 
 -- |Clear the GObject references for a vips operation
@@ -292,7 +309,7 @@ setProperty l a op = liftIO $ do
   clearArg a
   return op
 
-getProperty :: forall a. (IsVipsOutput a) => T.Text -> Op -> VipsIO (Maybe a)
+getProperty :: forall a. (IsVipsOutput a) => T.Text -> Op -> VipsIO a
 getProperty l op = liftIO $ do
   v <- GValue.newGValue =<< gValueType @a
   GObject.objectGetProperty op l v

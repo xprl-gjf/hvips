@@ -18,7 +18,7 @@ where
 import qualified  Data.Text as T
 import            GHC.TypeLits (KnownSymbol, Symbol, symbolVal)
 
-import            Vips.VipsIO
+import            Vips.VipsIO (VipsIO)
 import qualified  Vips.Internal.VipsOp.GI as V
 import qualified  GI.Vips as GV (Operation)
 
@@ -28,30 +28,33 @@ data Nickname (l :: Symbol) = Lookup | Foreign
 -- |Type-safe wrapper for a built (and executed) Operation
 newtype VipsResult = VipsResult { fromResult :: GV.Operation }
 
+
 -- |Get a result output property
-getProperty :: (V.IsVipsOutput a) => T.Text -> VipsResult -> VipsIO (Maybe a)
-getProperty t x = V.getProperty t (fromResult x)
+getProperty :: (V.IsVipsOutput a) => T.Text -> VipsResult -> VipsIO a
+getProperty t = V.getProperty t . fromResult
 
 
 -- |A named Vips operation
 data VipsOp (l :: Symbol) a = VipsOp
-        { getOp :: VipsIO GV.Operation                   -- ^construct the Vips operation
-        , getOutput :: VipsResult -> VipsIO (Maybe a)  -- ^get the result from the Vips operation
+        { getOp :: VipsIO GV.Operation          -- ^construct the Vips operation
+        , getOutput :: VipsResult -> VipsIO a   -- ^get the result from the Vips operation
         }
 
 -- |Constructor for a named vips operation
 vipsOp :: (KnownSymbol l) => Nickname l -> VipsOp l a
-vipsOp l = VipsOp { getOp = V.vipsOp (opName l), getOutput = const $ return Nothing }
+vipsOp l = VipsOp { getOp = V.vipsOp (opName l), getOutput = undefined }
   where
     opName = T.pack . symbolVal
 
 -- |Constructor for a vips foreign operation
 vipsForeignOp :: VipsIO T.Text -> Nickname l -> VipsOp l a
-vipsForeignOp f _ = VipsOp { getOp = V.vipsForeignOp f, getOutput = const $ return Nothing }
+vipsForeignOp n _ = VipsOp { getOp = V.vipsForeignOp n, getOutput = undefined }
 
 -- |Execute a VipsOp and return the result
-runVips :: VipsOp l a -> VipsIO (Maybe a)
-runVips op = VipsResult <$> (getOp op >>= V.runOp) >>= getOutput op
+runVips :: VipsOp l a -> VipsIO a
+runVips op = do
+  result <- VipsResult <$> (getOp op >>= V.runOp)
+  getOutput op result
 
 -- |Set an input argument value on a VipsOp
 setInput :: (V.IsVipsArg a) =>
@@ -65,8 +68,8 @@ setInput t a v = v { getOp = getOp' }
 
 -- |Set the result output function for a VipsOp
 setOutput :: 
-  (VipsResult -> VipsIO (Maybe a)) ->   -- ^the result output function
-  VipsOp l a ->                         -- ^the operation from which the result will be retrieved
+  (VipsResult -> VipsIO a) ->   -- ^the result output function
+  VipsOp l a ->                 -- ^the operation from which the result will be retrieved
   VipsOp l a
 setOutput x op = op { getOutput = x }
 
@@ -78,5 +81,5 @@ void op = op { getOutput = returnVoid' }
 -- |that has no result.
 --  N.B. some return value function _must_ be called to ensure that the
 --  underlying GObject is unreferenced and disposed.
-returnVoid' :: VipsResult -> VipsIO (Maybe ())
-returnVoid' = fmap Just . V.getNone . fromResult
+returnVoid' :: VipsResult -> VipsIO ()
+returnVoid' = V.getNone . fromResult

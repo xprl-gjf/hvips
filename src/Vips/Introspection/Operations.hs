@@ -34,7 +34,7 @@ instance IsVipsArg VipsTarget
 class IsVipsOp a where
   type Result a :: Type
   setInput :: (IsVipsArg b) => T.Text -> b -> a -> a
-  setOutput :: (VipsResult -> VipsIO (Maybe (Result a))) -> a -> a
+  setOutput :: (VipsResult -> VipsIO (Result a)) -> a -> a
 
 instance IsVipsOp (VipsOp l a) where
   type Result (VipsOp l a) = a
@@ -123,7 +123,7 @@ instance HasArgument Mosaic1 "bandno" Int32                 -- ^Band to search f
 instance HasOutput Mosaic1 "out" GV.Image                   -- ^Output image
 
 type Mosaic = VipsOp "mosaic" MosaicResult
-data MosaicResult = MosaicResult { out :: Maybe GV.Image, dx0 :: Maybe Int32, dy0 :: Maybe Int32, scale1 :: Maybe Double, angle1 :: Maybe Double, dx1 :: Maybe Double, dy1 :: Maybe Double }
+data MosaicResult = MosaicResult { out :: GV.Image, dx0 :: Int32, dy0 :: Int32, scale1 :: Double, angle1 :: Double, dx1 :: Double, dy1 :: Double }
 instance HasArgument Mosaic "ref" GV.Image                  -- ^Reference image
 instance HasArgument Mosaic "sec" GV.Image                  -- ^Secondary image
 instance HasArgument Mosaic "direction" GV.Direction        -- ^Horizontal or vertical mosaic
@@ -167,7 +167,7 @@ instance HasArgument DrawImage "y" Int32                    -- ^Draw image here
 instance HasArgument DrawImage "mode" GV.CombineMode        -- ^Combining mode
 
 type DrawFlood = VipsOp "draw_flood" DrawFloodResult
-data DrawFloodResult = DrawFloodResult { left :: Maybe Int32, top :: Maybe Int32, width :: Maybe Int32, height :: Maybe Int32 }
+data DrawFloodResult = DrawFloodResult { left :: Int32, top :: Int32, width :: Int32, height :: Int32 }
 instance HasArgument DrawFlood "image" GV.Image             -- ^Image to draw on
 instance HasArgument DrawFlood "ink" GV.ArrayDouble         -- ^Color for pixels
 instance HasArgument DrawFlood "x" Int32                    -- ^DrawFlood start point
@@ -212,13 +212,13 @@ instance HasArgument DrawRect "height" Int32                -- ^Rect to fill
 instance HasArgument DrawRect "fill" Bool                   -- ^Draw a solid object
 
 type FillNearest = VipsOp "fill_nearest" FillNearestResult
-data FillNearestResult = FillNearestResult { out :: Maybe GV.Image, distance :: Maybe GV.Image }
+data FillNearestResult = FillNearestResult { out :: GV.Image, distance :: GV.Image }
 instance HasArgument FillNearest "in" GV.Image              -- ^Input image argument
 instance HasOutput FillNearest "out" GV.Image               -- ^Value of nearest non-zero pixel
 instance HasOutput FillNearest "distance" GV.Image          -- ^Distance to nearest non-zero pixel
 
 type Labelregions = VipsOp "labelregions" LabelregionsResult
-data LabelregionsResult = LabelregionsResult { mask :: Maybe GV.Image, segments :: Maybe Int32 }
+data LabelregionsResult = LabelregionsResult { mask :: GV.Image, segments :: Int32 }
 instance HasArgument Labelregions "in" GV.Image             -- ^Input image argument
 instance HasOutput Labelregions "mask" GV.Image             -- ^Mask of region labels
 instance HasOutput Labelregions "segments" Int32            -- ^Number of discrete contigious regions
@@ -1137,7 +1137,7 @@ instance HasArgument Csvsave "background" GV.ArrayDouble    -- ^Background value
 instance HasArgument Csvsave "page-height" Int32            -- ^Set page height for multipage save
 
 type HeifloadSource = VipsOp "heifload_source" HeifloadSourceResult
-data HeifloadSourceResult = HeifloadSourceResult { out :: Maybe GV.Image, flags :: Maybe GV.ForeignFlags }
+data HeifloadSourceResult = HeifloadSourceResult { out :: GV.Image, flags :: GV.ForeignFlags }
 instance HasArgument HeifloadSource "source" VipsSource     -- ^Source to load from
 instance HasArgument HeifloadSource "page" Int32            -- ^Load this page from the file
 instance HasArgument HeifloadSource "n" Int32               -- ^Load this many pages
@@ -1149,7 +1149,7 @@ instance HasOutput HeifloadSource "out" GV.Image            -- ^Output image
 instance HasOutput HeifloadSource "flags" GV.ForeignFlags   -- ^Flags for this file
 
 type HeifloadBuffer = VipsOp "heifload_buffer" HeifloadBufferResult
-data HeifloadBufferResult = HeifloadBufferResult { out :: Maybe GV.Image, flags :: Maybe GV.ForeignFlags }
+data HeifloadBufferResult = HeifloadBufferResult { out :: GV.Image, flags :: GV.ForeignFlags }
 instance HasArgument HeifloadBuffer "buffer" GV.Blob        -- ^Buffer to load from
 instance HasArgument HeifloadBuffer "page" Int32            -- ^Load this page from the file
 instance HasArgument HeifloadBuffer "n" Int32               -- ^Load this many pages
@@ -1161,7 +1161,7 @@ instance HasOutput HeifloadBuffer "out" GV.Image            -- ^Output image
 instance HasOutput HeifloadBuffer "flags" GV.ForeignFlags   -- ^Flags for this file
 
 type Heifload = VipsOp "heifload" HeifloadResult
-data HeifloadResult = HeifloadResult { out :: Maybe GV.Image, flags :: Maybe GV.ForeignFlags }
+data HeifloadResult = HeifloadResult { out :: GV.Image, flags :: GV.ForeignFlags }
 instance HasArgument Heifload "filename" T.Text             -- ^Filename to load from
 instance HasArgument Heifload "page" Int32                  -- ^Load this page from the file
 instance HasArgument Heifload "n" Int32                     -- ^Load this many pages
@@ -1173,7 +1173,7 @@ instance HasOutput Heifload "out" GV.Image                  -- ^Output image
 instance HasOutput Heifload "flags" GV.ForeignFlags         -- ^Flags for this file
 
 type Openexrload = VipsOp "openexrload" OpenexrloadResult
-data OpenexrloadResult = OpenexrloadResult { out :: Maybe GV.Image, flags :: Maybe GV.ForeignFlags }
+data OpenexrloadResult = OpenexrloadResult { out :: GV.Image, flags :: GV.ForeignFlags }
 instance HasArgument Openexrload "filename" T.Text          -- ^Filename to load from
 instance HasArgument Openexrload "memory" Bool              -- ^Force open via memory
 instance HasArgument Openexrload "access" GV.Access         -- ^Required access pattern for this file
@@ -1182,7 +1182,7 @@ instance HasOutput Openexrload "out" GV.Image               -- ^Output image
 instance HasOutput Openexrload "flags" GV.ForeignFlags      -- ^Flags for this file
 
 type Fitsload = VipsOp "fitsload" FitsloadResult
-data FitsloadResult = FitsloadResult { out :: Maybe GV.Image, flags :: Maybe GV.ForeignFlags }
+data FitsloadResult = FitsloadResult { out :: GV.Image, flags :: GV.ForeignFlags }
 instance HasArgument Fitsload "filename" T.Text             -- ^Filename to load from
 instance HasArgument Fitsload "memory" Bool                 -- ^Force open via memory
 instance HasArgument Fitsload "access" GV.Access            -- ^Required access pattern for this file
@@ -1191,7 +1191,7 @@ instance HasOutput Fitsload "out" GV.Image                  -- ^Output image
 instance HasOutput Fitsload "flags" GV.ForeignFlags         -- ^Flags for this file
 
 type MagickloadBuffer = VipsOp "magickload_buffer" MagickloadBufferResult
-data MagickloadBufferResult = MagickloadBufferResult { out :: Maybe GV.Image, flags :: Maybe GV.ForeignFlags }
+data MagickloadBufferResult = MagickloadBufferResult { out :: GV.Image, flags :: GV.ForeignFlags }
 instance HasArgument MagickloadBuffer "buffer" GV.Blob      -- ^Buffer to load from
 instance HasArgument MagickloadBuffer "density" T.Text      -- ^Canvas resolution for rendering vector formats like SVG
 instance HasArgument MagickloadBuffer "page" Int32          -- ^Load this page from the file
@@ -1203,7 +1203,7 @@ instance HasOutput MagickloadBuffer "out" GV.Image          -- ^Output image
 instance HasOutput MagickloadBuffer "flags" GV.ForeignFlags  -- ^Flags for this file
 
 type Magickload = VipsOp "magickload" MagickloadResult
-data MagickloadResult = MagickloadResult { out :: Maybe GV.Image, flags :: Maybe GV.ForeignFlags }
+data MagickloadResult = MagickloadResult { out :: GV.Image, flags :: GV.ForeignFlags }
 instance HasArgument Magickload "filename" T.Text           -- ^Filename to load from
 instance HasArgument Magickload "density" T.Text            -- ^Canvas resolution for rendering vector formats like SVG
 instance HasArgument Magickload "page" Int32                -- ^Load this page from the file
@@ -1215,7 +1215,7 @@ instance HasOutput Magickload "out" GV.Image                -- ^Output image
 instance HasOutput Magickload "flags" GV.ForeignFlags       -- ^Flags for this file
 
 type TiffloadSource = VipsOp "tiffload_source" TiffloadSourceResult
-data TiffloadSourceResult = TiffloadSourceResult { out :: Maybe GV.Image, flags :: Maybe GV.ForeignFlags }
+data TiffloadSourceResult = TiffloadSourceResult { out :: GV.Image, flags :: GV.ForeignFlags }
 instance HasArgument TiffloadSource "source" VipsSource     -- ^Source to load from
 instance HasArgument TiffloadSource "page" Int32            -- ^Load this page from the image
 instance HasArgument TiffloadSource "n" Int32               -- ^Load this many pages
@@ -1228,7 +1228,7 @@ instance HasOutput TiffloadSource "out" GV.Image            -- ^Output image
 instance HasOutput TiffloadSource "flags" GV.ForeignFlags   -- ^Flags for this file
 
 type TiffloadBuffer = VipsOp "tiffload_buffer" TiffloadBufferResult
-data TiffloadBufferResult = TiffloadBufferResult { out :: Maybe GV.Image, flags :: Maybe GV.ForeignFlags }
+data TiffloadBufferResult = TiffloadBufferResult { out :: GV.Image, flags :: GV.ForeignFlags }
 instance HasArgument TiffloadBuffer "buffer" GV.Blob        -- ^Buffer to load from
 instance HasArgument TiffloadBuffer "page" Int32            -- ^Load this page from the image
 instance HasArgument TiffloadBuffer "n" Int32               -- ^Load this many pages
@@ -1241,7 +1241,7 @@ instance HasOutput TiffloadBuffer "out" GV.Image            -- ^Output image
 instance HasOutput TiffloadBuffer "flags" GV.ForeignFlags   -- ^Flags for this file
 
 type Tiffload = VipsOp "tiffload" TiffloadResult
-data TiffloadResult = TiffloadResult { out :: Maybe GV.Image, flags :: Maybe GV.ForeignFlags }
+data TiffloadResult = TiffloadResult { out :: GV.Image, flags :: GV.ForeignFlags }
 instance HasArgument Tiffload "filename" T.Text             -- ^Filename to load from
 instance HasArgument Tiffload "page" Int32                  -- ^Load this page from the image
 instance HasArgument Tiffload "n" Int32                     -- ^Load this many pages
@@ -1254,7 +1254,7 @@ instance HasOutput Tiffload "out" GV.Image                  -- ^Output image
 instance HasOutput Tiffload "flags" GV.ForeignFlags         -- ^Flags for this file
 
 type WebploadSource = VipsOp "webpload_source" WebploadSourceResult
-data WebploadSourceResult = WebploadSourceResult { out :: Maybe GV.Image, flags :: Maybe GV.ForeignFlags }
+data WebploadSourceResult = WebploadSourceResult { out :: GV.Image, flags :: GV.ForeignFlags }
 instance HasArgument WebploadSource "source" VipsSource     -- ^Source to load from
 instance HasArgument WebploadSource "page" Int32            -- ^Load this page from the file
 instance HasArgument WebploadSource "n" Int32               -- ^Load this many pages
@@ -1266,7 +1266,7 @@ instance HasOutput WebploadSource "out" GV.Image            -- ^Output image
 instance HasOutput WebploadSource "flags" GV.ForeignFlags   -- ^Flags for this file
 
 type WebploadBuffer = VipsOp "webpload_buffer" WebploadBufferResult
-data WebploadBufferResult = WebploadBufferResult { out :: Maybe GV.Image, flags :: Maybe GV.ForeignFlags }
+data WebploadBufferResult = WebploadBufferResult { out :: GV.Image, flags :: GV.ForeignFlags }
 instance HasArgument WebploadBuffer "buffer" GV.Blob        -- ^Buffer to load from
 instance HasArgument WebploadBuffer "page" Int32            -- ^Load this page from the file
 instance HasArgument WebploadBuffer "n" Int32               -- ^Load this many pages
@@ -1278,7 +1278,7 @@ instance HasOutput WebploadBuffer "out" GV.Image            -- ^Output image
 instance HasOutput WebploadBuffer "flags" GV.ForeignFlags   -- ^Flags for this file
 
 type Webpload = VipsOp "webpload" WebploadResult
-data WebploadResult = WebploadResult { out :: Maybe GV.Image, flags :: Maybe GV.ForeignFlags }
+data WebploadResult = WebploadResult { out :: GV.Image, flags :: GV.ForeignFlags }
 instance HasArgument Webpload "filename" T.Text             -- ^Filename to load from
 instance HasArgument Webpload "page" Int32                  -- ^Load this page from the file
 instance HasArgument Webpload "n" Int32                     -- ^Load this many pages
@@ -1290,7 +1290,7 @@ instance HasOutput Webpload "out" GV.Image                  -- ^Output image
 instance HasOutput Webpload "flags" GV.ForeignFlags         -- ^Flags for this file
 
 type JpegloadSource = VipsOp "jpegload_source" JpegloadSourceResult
-data JpegloadSourceResult = JpegloadSourceResult { out :: Maybe GV.Image, flags :: Maybe GV.ForeignFlags }
+data JpegloadSourceResult = JpegloadSourceResult { out :: GV.Image, flags :: GV.ForeignFlags }
 instance HasArgument JpegloadSource "source" VipsSource     -- ^Source to load from
 instance HasArgument JpegloadSource "shrink" Int32          -- ^Shrink factor on load
 instance HasArgument JpegloadSource "autorotate" Bool       -- ^Rotate image using exif orientation
@@ -1301,7 +1301,7 @@ instance HasOutput JpegloadSource "out" GV.Image            -- ^Output image
 instance HasOutput JpegloadSource "flags" GV.ForeignFlags   -- ^Flags for this file
 
 type JpegloadBuffer = VipsOp "jpegload_buffer" JpegloadBufferResult
-data JpegloadBufferResult = JpegloadBufferResult { out :: Maybe GV.Image, flags :: Maybe GV.ForeignFlags }
+data JpegloadBufferResult = JpegloadBufferResult { out :: GV.Image, flags :: GV.ForeignFlags }
 instance HasArgument JpegloadBuffer "buffer" GV.Blob        -- ^Buffer to load from
 instance HasArgument JpegloadBuffer "shrink" Int32          -- ^Shrink factor on load
 instance HasArgument JpegloadBuffer "autorotate" Bool       -- ^Rotate image using exif orientation
@@ -1312,7 +1312,7 @@ instance HasOutput JpegloadBuffer "out" GV.Image            -- ^Output image
 instance HasOutput JpegloadBuffer "flags" GV.ForeignFlags   -- ^Flags for this file
 
 type Jpegload = VipsOp "jpegload" JpegloadResult
-data JpegloadResult = JpegloadResult { out :: Maybe GV.Image, flags :: Maybe GV.ForeignFlags }
+data JpegloadResult = JpegloadResult { out :: GV.Image, flags :: GV.ForeignFlags }
 instance HasArgument Jpegload "filename" T.Text             -- ^Filename to load from
 instance HasArgument Jpegload "shrink" Int32                -- ^Shrink factor on load
 instance HasArgument Jpegload "autorotate" Bool             -- ^Rotate image using exif orientation
@@ -1323,7 +1323,7 @@ instance HasOutput Jpegload "out" GV.Image                  -- ^Output image
 instance HasOutput Jpegload "flags" GV.ForeignFlags         -- ^Flags for this file
 
 type PngloadSource = VipsOp "pngload_source" PngloadSourceResult
-data PngloadSourceResult = PngloadSourceResult { out :: Maybe GV.Image, flags :: Maybe GV.ForeignFlags }
+data PngloadSourceResult = PngloadSourceResult { out :: GV.Image, flags :: GV.ForeignFlags }
 instance HasArgument PngloadSource "source" VipsSource      -- ^Source to load from
 instance HasArgument PngloadSource "memory" Bool            -- ^Force open via memory
 instance HasArgument PngloadSource "access" GV.Access       -- ^Required access pattern for this file
@@ -1332,7 +1332,7 @@ instance HasOutput PngloadSource "out" GV.Image             -- ^Output image
 instance HasOutput PngloadSource "flags" GV.ForeignFlags    -- ^Flags for this file
 
 type PngloadBuffer = VipsOp "pngload_buffer" PngloadBufferResult
-data PngloadBufferResult = PngloadBufferResult { out :: Maybe GV.Image, flags :: Maybe GV.ForeignFlags }
+data PngloadBufferResult = PngloadBufferResult { out :: GV.Image, flags :: GV.ForeignFlags }
 instance HasArgument PngloadBuffer "buffer" GV.Blob         -- ^Buffer to load from
 instance HasArgument PngloadBuffer "memory" Bool            -- ^Force open via memory
 instance HasArgument PngloadBuffer "access" GV.Access       -- ^Required access pattern for this file
@@ -1341,7 +1341,7 @@ instance HasOutput PngloadBuffer "out" GV.Image             -- ^Output image
 instance HasOutput PngloadBuffer "flags" GV.ForeignFlags    -- ^Flags for this file
 
 type Pngload = VipsOp "pngload" PngloadResult
-data PngloadResult = PngloadResult { out :: Maybe GV.Image, flags :: Maybe GV.ForeignFlags }
+data PngloadResult = PngloadResult { out :: GV.Image, flags :: GV.ForeignFlags }
 instance HasArgument Pngload "filename" T.Text              -- ^Filename to load from
 instance HasArgument Pngload "memory" Bool                  -- ^Force open via memory
 instance HasArgument Pngload "access" GV.Access             -- ^Required access pattern for this file
@@ -1350,7 +1350,7 @@ instance HasOutput Pngload "out" GV.Image                   -- ^Output image
 instance HasOutput Pngload "flags" GV.ForeignFlags          -- ^Flags for this file
 
 type GifloadSource = VipsOp "gifload_source" GifloadSourceResult
-data GifloadSourceResult = GifloadSourceResult { out :: Maybe GV.Image, flags :: Maybe GV.ForeignFlags }
+data GifloadSourceResult = GifloadSourceResult { out :: GV.Image, flags :: GV.ForeignFlags }
 instance HasArgument GifloadSource "source" VipsSource      -- ^Source to load from
 instance HasArgument GifloadSource "page" Int32             -- ^Load this page from the file
 instance HasArgument GifloadSource "n" Int32                -- ^Load this many pages
@@ -1361,7 +1361,7 @@ instance HasOutput GifloadSource "out" GV.Image             -- ^Output image
 instance HasOutput GifloadSource "flags" GV.ForeignFlags    -- ^Flags for this file
 
 type GifloadBuffer = VipsOp "gifload_buffer" GifloadBufferResult
-data GifloadBufferResult = GifloadBufferResult { out :: Maybe GV.Image, flags :: Maybe GV.ForeignFlags }
+data GifloadBufferResult = GifloadBufferResult { out :: GV.Image, flags :: GV.ForeignFlags }
 instance HasArgument GifloadBuffer "buffer" GV.Blob         -- ^Buffer to load from
 instance HasArgument GifloadBuffer "page" Int32             -- ^Load this page from the file
 instance HasArgument GifloadBuffer "n" Int32                -- ^Load this many pages
@@ -1372,7 +1372,7 @@ instance HasOutput GifloadBuffer "out" GV.Image             -- ^Output image
 instance HasOutput GifloadBuffer "flags" GV.ForeignFlags    -- ^Flags for this file
 
 type Gifload = VipsOp "gifload" GifloadResult
-data GifloadResult = GifloadResult { out :: Maybe GV.Image, flags :: Maybe GV.ForeignFlags }
+data GifloadResult = GifloadResult { out :: GV.Image, flags :: GV.ForeignFlags }
 instance HasArgument Gifload "filename" T.Text              -- ^Filename to load from
 instance HasArgument Gifload "page" Int32                   -- ^Load this page from the file
 instance HasArgument Gifload "n" Int32                      -- ^Load this many pages
@@ -1383,7 +1383,7 @@ instance HasOutput Gifload "out" GV.Image                   -- ^Output image
 instance HasOutput Gifload "flags" GV.ForeignFlags          -- ^Flags for this file
 
 type SvgloadSource = VipsOp "svgload_source" SvgloadSourceResult
-data SvgloadSourceResult = SvgloadSourceResult { out :: Maybe GV.Image, flags :: Maybe GV.ForeignFlags }
+data SvgloadSourceResult = SvgloadSourceResult { out :: GV.Image, flags :: GV.ForeignFlags }
 instance HasArgument SvgloadSource "source" VipsSource      -- ^Source to load from
 instance HasArgument SvgloadSource "dpi" Double             -- ^Render at this DPI
 instance HasArgument SvgloadSource "scale" Double           -- ^Scale output by this factor
@@ -1395,7 +1395,7 @@ instance HasOutput SvgloadSource "out" GV.Image             -- ^Output image
 instance HasOutput SvgloadSource "flags" GV.ForeignFlags    -- ^Flags for this file
 
 type SvgloadBuffer = VipsOp "svgload_buffer" SvgloadBufferResult
-data SvgloadBufferResult = SvgloadBufferResult { out :: Maybe GV.Image, flags :: Maybe GV.ForeignFlags }
+data SvgloadBufferResult = SvgloadBufferResult { out :: GV.Image, flags :: GV.ForeignFlags }
 instance HasArgument SvgloadBuffer "buffer" GV.Blob         -- ^Buffer to load from
 instance HasArgument SvgloadBuffer "dpi" Double             -- ^Render at this DPI
 instance HasArgument SvgloadBuffer "scale" Double           -- ^Scale output by this factor
@@ -1407,7 +1407,7 @@ instance HasOutput SvgloadBuffer "out" GV.Image             -- ^Output image
 instance HasOutput SvgloadBuffer "flags" GV.ForeignFlags    -- ^Flags for this file
 
 type Svgload = VipsOp "svgload" SvgloadResult
-data SvgloadResult = SvgloadResult { out :: Maybe GV.Image, flags :: Maybe GV.ForeignFlags }
+data SvgloadResult = SvgloadResult { out :: GV.Image, flags :: GV.ForeignFlags }
 instance HasArgument Svgload "filename" T.Text              -- ^Filename to load from
 instance HasArgument Svgload "dpi" Double                   -- ^Render at this DPI
 instance HasArgument Svgload "scale" Double                 -- ^Scale output by this factor
@@ -1419,7 +1419,7 @@ instance HasOutput Svgload "out" GV.Image                   -- ^Output image
 instance HasOutput Svgload "flags" GV.ForeignFlags          -- ^Flags for this file
 
 type PdfloadSource = VipsOp "pdfload_source" PdfloadSourceResult
-data PdfloadSourceResult = PdfloadSourceResult { out :: Maybe GV.Image, flags :: Maybe GV.ForeignFlags }
+data PdfloadSourceResult = PdfloadSourceResult { out :: GV.Image, flags :: GV.ForeignFlags }
 instance HasArgument PdfloadSource "source" VipsSource      -- ^Source to load from
 instance HasArgument PdfloadSource "page" Int32             -- ^Load this page from the file
 instance HasArgument PdfloadSource "n" Int32                -- ^Load this many pages
@@ -1433,7 +1433,7 @@ instance HasOutput PdfloadSource "out" GV.Image             -- ^Output image
 instance HasOutput PdfloadSource "flags" GV.ForeignFlags    -- ^Flags for this file
 
 type PdfloadBuffer = VipsOp "pdfload_buffer" PdfloadBufferResult
-data PdfloadBufferResult = PdfloadBufferResult { out :: Maybe GV.Image, flags :: Maybe GV.ForeignFlags }
+data PdfloadBufferResult = PdfloadBufferResult { out :: GV.Image, flags :: GV.ForeignFlags }
 instance HasArgument PdfloadBuffer "buffer" GV.Blob         -- ^Buffer to load from
 instance HasArgument PdfloadBuffer "page" Int32             -- ^Load this page from the file
 instance HasArgument PdfloadBuffer "n" Int32                -- ^Load this many pages
@@ -1447,7 +1447,7 @@ instance HasOutput PdfloadBuffer "out" GV.Image             -- ^Output image
 instance HasOutput PdfloadBuffer "flags" GV.ForeignFlags    -- ^Flags for this file
 
 type Pdfload = VipsOp "pdfload" PdfloadResult
-data PdfloadResult = PdfloadResult { out :: Maybe GV.Image, flags :: Maybe GV.ForeignFlags }
+data PdfloadResult = PdfloadResult { out :: GV.Image, flags :: GV.ForeignFlags }
 instance HasArgument Pdfload "filename" T.Text              -- ^Filename to load from
 instance HasArgument Pdfload "page" Int32                   -- ^Load this page from the file
 instance HasArgument Pdfload "n" Int32                      -- ^Load this many pages
@@ -1461,7 +1461,7 @@ instance HasOutput Pdfload "out" GV.Image                   -- ^Output image
 instance HasOutput Pdfload "flags" GV.ForeignFlags          -- ^Flags for this file
 
 type RadloadSource = VipsOp "radload_source" RadloadSourceResult
-data RadloadSourceResult = RadloadSourceResult { out :: Maybe GV.Image, flags :: Maybe GV.ForeignFlags }
+data RadloadSourceResult = RadloadSourceResult { out :: GV.Image, flags :: GV.ForeignFlags }
 instance HasArgument RadloadSource "source" VipsSource      -- ^Source to load from
 instance HasArgument RadloadSource "memory" Bool            -- ^Force open via memory
 instance HasArgument RadloadSource "access" GV.Access       -- ^Required access pattern for this file
@@ -1470,7 +1470,7 @@ instance HasOutput RadloadSource "out" GV.Image             -- ^Output image
 instance HasOutput RadloadSource "flags" GV.ForeignFlags    -- ^Flags for this file
 
 type RadloadBuffer = VipsOp "radload_buffer" RadloadBufferResult
-data RadloadBufferResult = RadloadBufferResult { out :: Maybe GV.Image, flags :: Maybe GV.ForeignFlags }
+data RadloadBufferResult = RadloadBufferResult { out :: GV.Image, flags :: GV.ForeignFlags }
 instance HasArgument RadloadBuffer "buffer" GV.Blob         -- ^Buffer to load from
 instance HasArgument RadloadBuffer "memory" Bool            -- ^Force open via memory
 instance HasArgument RadloadBuffer "access" GV.Access       -- ^Required access pattern for this file
@@ -1479,7 +1479,7 @@ instance HasOutput RadloadBuffer "out" GV.Image             -- ^Output image
 instance HasOutput RadloadBuffer "flags" GV.ForeignFlags    -- ^Flags for this file
 
 type Radload = VipsOp "radload" RadloadResult
-data RadloadResult = RadloadResult { out :: Maybe GV.Image, flags :: Maybe GV.ForeignFlags }
+data RadloadResult = RadloadResult { out :: GV.Image, flags :: GV.ForeignFlags }
 instance HasArgument Radload "filename" T.Text              -- ^Filename to load from
 instance HasArgument Radload "memory" Bool                  -- ^Force open via memory
 instance HasArgument Radload "access" GV.Access             -- ^Required access pattern for this file
@@ -1488,7 +1488,7 @@ instance HasOutput Radload "out" GV.Image                   -- ^Output image
 instance HasOutput Radload "flags" GV.ForeignFlags          -- ^Flags for this file
 
 type PpmloadSource = VipsOp "ppmload_source" PpmloadSourceResult
-data PpmloadSourceResult = PpmloadSourceResult { out :: Maybe GV.Image, flags :: Maybe GV.ForeignFlags }
+data PpmloadSourceResult = PpmloadSourceResult { out :: GV.Image, flags :: GV.ForeignFlags }
 instance HasArgument PpmloadSource "source" VipsSource      -- ^Source to load from
 instance HasArgument PpmloadSource "memory" Bool            -- ^Force open via memory
 instance HasArgument PpmloadSource "access" GV.Access       -- ^Required access pattern for this file
@@ -1497,7 +1497,7 @@ instance HasOutput PpmloadSource "out" GV.Image             -- ^Output image
 instance HasOutput PpmloadSource "flags" GV.ForeignFlags    -- ^Flags for this file
 
 type Ppmload = VipsOp "ppmload" PpmloadResult
-data PpmloadResult = PpmloadResult { out :: Maybe GV.Image, flags :: Maybe GV.ForeignFlags }
+data PpmloadResult = PpmloadResult { out :: GV.Image, flags :: GV.ForeignFlags }
 instance HasArgument Ppmload "filename" T.Text              -- ^Filename to load from
 instance HasArgument Ppmload "memory" Bool                  -- ^Force open via memory
 instance HasArgument Ppmload "access" GV.Access             -- ^Required access pattern for this file
@@ -1506,7 +1506,7 @@ instance HasOutput Ppmload "out" GV.Image                   -- ^Output image
 instance HasOutput Ppmload "flags" GV.ForeignFlags          -- ^Flags for this file
 
 type Analyzeload = VipsOp "analyzeload" AnalyzeloadResult
-data AnalyzeloadResult = AnalyzeloadResult { out :: Maybe GV.Image, flags :: Maybe GV.ForeignFlags }
+data AnalyzeloadResult = AnalyzeloadResult { out :: GV.Image, flags :: GV.ForeignFlags }
 instance HasArgument Analyzeload "filename" T.Text          -- ^Filename to load from
 instance HasArgument Analyzeload "memory" Bool              -- ^Force open via memory
 instance HasArgument Analyzeload "access" GV.Access         -- ^Required access pattern for this file
@@ -1515,7 +1515,7 @@ instance HasOutput Analyzeload "out" GV.Image               -- ^Output image
 instance HasOutput Analyzeload "flags" GV.ForeignFlags      -- ^Flags for this file
 
 type Vipsload = VipsOp "vipsload" VipsloadResult
-data VipsloadResult = VipsloadResult { out :: Maybe GV.Image, flags :: Maybe GV.ForeignFlags }
+data VipsloadResult = VipsloadResult { out :: GV.Image, flags :: GV.ForeignFlags }
 instance HasArgument Vipsload "filename" T.Text             -- ^Filename to load from
 instance HasArgument Vipsload "memory" Bool                 -- ^Force open via memory
 instance HasArgument Vipsload "access" GV.Access            -- ^Required access pattern for this file
@@ -1524,7 +1524,7 @@ instance HasOutput Vipsload "out" GV.Image                  -- ^Output image
 instance HasOutput Vipsload "flags" GV.ForeignFlags         -- ^Flags for this file
 
 type Rawload = VipsOp "rawload" RawloadResult
-data RawloadResult = RawloadResult { out :: Maybe GV.Image, flags :: Maybe GV.ForeignFlags }
+data RawloadResult = RawloadResult { out :: GV.Image, flags :: GV.ForeignFlags }
 instance HasArgument Rawload "filename" T.Text              -- ^Filename to load from
 instance HasArgument Rawload "width" Int32                  -- ^Image width in pixels
 instance HasArgument Rawload "height" Int32                 -- ^Image height in pixels
@@ -1539,7 +1539,7 @@ instance HasOutput Rawload "out" GV.Image                   -- ^Output image
 instance HasOutput Rawload "flags" GV.ForeignFlags          -- ^Flags for this file
 
 type MatrixloadSource = VipsOp "matrixload_source" MatrixloadSourceResult
-data MatrixloadSourceResult = MatrixloadSourceResult { out :: Maybe GV.Image, flags :: Maybe GV.ForeignFlags }
+data MatrixloadSourceResult = MatrixloadSourceResult { out :: GV.Image, flags :: GV.ForeignFlags }
 instance HasArgument MatrixloadSource "source" VipsSource   -- ^Source to load from
 instance HasArgument MatrixloadSource "memory" Bool         -- ^Force open via memory
 instance HasArgument MatrixloadSource "access" GV.Access    -- ^Required access pattern for this file
@@ -1548,7 +1548,7 @@ instance HasOutput MatrixloadSource "out" GV.Image          -- ^Output image
 instance HasOutput MatrixloadSource "flags" GV.ForeignFlags  -- ^Flags for this file
 
 type Matrixload = VipsOp "matrixload" MatrixloadResult
-data MatrixloadResult = MatrixloadResult { out :: Maybe GV.Image, flags :: Maybe GV.ForeignFlags }
+data MatrixloadResult = MatrixloadResult { out :: GV.Image, flags :: GV.ForeignFlags }
 instance HasArgument Matrixload "filename" T.Text           -- ^Filename to load from
 instance HasArgument Matrixload "memory" Bool               -- ^Force open via memory
 instance HasArgument Matrixload "access" GV.Access          -- ^Required access pattern for this file
@@ -1557,7 +1557,7 @@ instance HasOutput Matrixload "out" GV.Image                -- ^Output image
 instance HasOutput Matrixload "flags" GV.ForeignFlags       -- ^Flags for this file
 
 type CsvloadSource = VipsOp "csvload_source" CsvloadSourceResult
-data CsvloadSourceResult = CsvloadSourceResult { out :: Maybe GV.Image, flags :: Maybe GV.ForeignFlags }
+data CsvloadSourceResult = CsvloadSourceResult { out :: GV.Image, flags :: GV.ForeignFlags }
 instance HasArgument CsvloadSource "source" VipsSource      -- ^Source to load from
 instance HasArgument CsvloadSource "skip" Int32             -- ^Skip this many lines at the start of the file
 instance HasArgument CsvloadSource "lines" Int32            -- ^Read this many lines from the file
@@ -1570,7 +1570,7 @@ instance HasOutput CsvloadSource "out" GV.Image             -- ^Output image
 instance HasOutput CsvloadSource "flags" GV.ForeignFlags    -- ^Flags for this file
 
 type Csvload = VipsOp "csvload" CsvloadResult
-data CsvloadResult = CsvloadResult { out :: Maybe GV.Image, flags :: Maybe GV.ForeignFlags }
+data CsvloadResult = CsvloadResult { out :: GV.Image, flags :: GV.ForeignFlags }
 instance HasArgument Csvload "filename" T.Text              -- ^Filename to load from
 instance HasArgument Csvload "skip" Int32                   -- ^Skip this many lines at the start of the file
 instance HasArgument Csvload "lines" Int32                  -- ^Read this many lines from the file
@@ -1801,7 +1801,7 @@ instance HasArgument Xyz "esize" Int32                      -- ^Size of fifth di
 instance HasOutput Xyz "out" GV.Image                       -- ^Output image
 
 type Text = VipsOp "text" TextResult
-data TextResult = TextResult { out :: Maybe GV.Image, autofit_dpi :: Maybe Int32 }
+data TextResult = TextResult { out :: GV.Image, autofit_dpi :: Int32 }
 instance HasArgument Text "text" T.Text                     -- ^Text to render
 instance HasArgument Text "font" T.Text                     -- ^Font to render with
 instance HasArgument Text "width" Int32                     -- ^Maximum image width in pixels
@@ -1941,7 +1941,7 @@ instance HasArgument Ifthenelse "blend" Bool                -- ^Blend smoothly b
 instance HasOutput Ifthenelse "out" GV.Image                -- ^Output image
 
 type Autorot = VipsOp "autorot" AutorotResult
-data AutorotResult = AutorotResult { out :: Maybe GV.Image, angle :: Maybe GV.Angle, flip :: Maybe Bool }
+data AutorotResult = AutorotResult { out :: GV.Image, angle :: GV.Angle, flip :: Bool }
 instance HasArgument Autorot "in" GV.Image                  -- ^Input image
 instance HasOutput Autorot "out" GV.Image                   -- ^Output image
 instance HasOutput Autorot "angle" GV.Angle                 -- ^Angle image was rotated by
@@ -2112,7 +2112,7 @@ instance HasArgument Copy "yoffset" Int32                   -- ^Vertical offset 
 instance HasOutput Copy "out" GV.Image                      -- ^Output image
 
 type FindTrim = VipsOp "find_trim" FindTrimResult
-data FindTrimResult = FindTrimResult { left :: Maybe Int32, top :: Maybe Int32, width :: Maybe Int32, height :: Maybe Int32 }
+data FindTrimResult = FindTrimResult { left :: Int32, top :: Int32, width :: Int32, height :: Int32 }
 instance HasArgument FindTrim "in" GV.Image                 -- ^Image to find_trim
 instance HasArgument FindTrim "threshold" Double            -- ^Object threshold
 instance HasArgument FindTrim "background" GV.ArrayDouble   -- ^Color for background pixels
@@ -2138,13 +2138,13 @@ instance HasArgument Measure "height" Int32                 -- ^Height of extrac
 instance HasOutput Measure "out" GV.Image                   -- ^Output array of statistics
 
 type Profile = VipsOp "profile" ProfileResult
-data ProfileResult = ProfileResult { columns :: Maybe GV.Image, rows :: Maybe GV.Image }
+data ProfileResult = ProfileResult { columns :: GV.Image, rows :: GV.Image }
 instance HasArgument Profile "in" GV.Image                  -- ^Input image
 instance HasOutput Profile "columns" GV.Image               -- ^First non-zero pixel in column
 instance HasOutput Profile "rows" GV.Image                  -- ^First non-zero pixel in row
 
 type Project = VipsOp "project" ProjectResult
-data ProjectResult = ProjectResult { columns :: Maybe GV.Image, rows :: Maybe GV.Image }
+data ProjectResult = ProjectResult { columns :: GV.Image, rows :: GV.Image }
 instance HasArgument Project "in" GV.Image                  -- ^Input image
 instance HasOutput Project "columns" GV.Image               -- ^Sums of columns
 instance HasOutput Project "rows" GV.Image                  -- ^Sums of rows
@@ -2187,7 +2187,7 @@ instance HasArgument Deviate "in" GV.Image                  -- ^Input image
 instance HasOutput Deviate "out" Double                     -- ^Output value
 
 type Max = VipsOp "max" MaxResult
-data MaxResult = MaxResult { out :: Maybe Double, x :: Maybe Int32, y :: Maybe Int32, out_array :: Maybe GV.ArrayDouble, x_array :: Maybe GV.ArrayInt, y_array :: Maybe GV.ArrayInt }
+data MaxResult = MaxResult { out :: Double, x :: Int32, y :: Int32, out_array :: GV.ArrayDouble, x_array :: GV.ArrayInt, y_array :: GV.ArrayInt }
 instance HasArgument Max "in" GV.Image                      -- ^Input image
 instance HasArgument Max "size" Int32                       -- ^Number of maximum values to find
 instance HasOutput Max "out" Double                         -- ^Output value
@@ -2198,7 +2198,7 @@ instance HasOutput Max "x-array" GV.ArrayInt                -- ^Array of horizon
 instance HasOutput Max "y-array" GV.ArrayInt                -- ^Array of vertical positions
 
 type Min = VipsOp "min" MinResult
-data MinResult = MinResult { out :: Maybe Double, x :: Maybe Int32, y :: Maybe Int32, out_array :: Maybe GV.ArrayDouble, x_array :: Maybe GV.ArrayInt, y_array :: Maybe GV.ArrayInt }
+data MinResult = MinResult { out :: Double, x :: Int32, y :: Int32, out_array :: GV.ArrayDouble, x_array :: GV.ArrayInt, y_array :: GV.ArrayInt }
 instance HasArgument Min "in" GV.Image                      -- ^Input image
 instance HasArgument Min "size" Int32                       -- ^Number of minimum values to find
 instance HasOutput Min "out" Double                         -- ^Output value
@@ -2333,7 +2333,7 @@ instance HasArgument Add "right" GV.Image                   -- ^Right-hand image
 instance HasOutput Add "out" GV.Image                       -- ^Output image
 
 type System = VipsOp "system" SystemResult
-data SystemResult = SystemResult { out :: Maybe GV.Image, log :: Maybe T.Text }
+data SystemResult = SystemResult { out :: GV.Image, log :: T.Text }
 instance HasArgument System "in" GV.ArrayImage              -- ^Array of input images
 instance HasArgument System "cmd-format" T.Text             -- ^Command to run
 instance HasArgument System "in-format" T.Text              -- ^Format for input filename

@@ -55,12 +55,9 @@ runApp Args{..} = do
 -- |The applied image transformation;
 -- |saves an inverted, blurred copy of the source image
 processImage :: FilePath -> FilePath -> VipsIO ()
-processImage inFile outFile = void . runVips $
-      vips loadImage inFile
-  >>= vips blur
-  >>= vips invert
-  >>= vips (saveImage outFile)
-    where
-      blur = gaussblur 1.2 <&> Arg.minAmpl (0.025 :: Double)
+processImage inFile outFile = void . process $ inFile
+  where
+    process = vips . loadImage >=> vips . blur >=> vips . invert >=> vips . saveImage outFile
+    blur = gaussblur 1.2 <&> Arg.minAmpl (0.025 :: Double)
 
 -- ===========================
