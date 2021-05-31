@@ -39,7 +39,7 @@ loadImage a = vipsForeignOp loader (Foreign :: Nickname "foreignLoadImage") & in
   where
     a' = T.pack a
     loader = GV.foreignFindLoad a'
-    inputs = V.filename' a'
+    inputs = V.filename a'
     outputs = V.outImg
 
 saveImage :: FilePath -> GV.Image -> SaveImage
@@ -47,7 +47,7 @@ saveImage a b = vipsForeignOp saver (Foreign :: Nickname "foreignSaveImage") & i
   where
     a' = T.pack a
     saver = GV.foreignFindSave a'
-    inputs = V.filename' a' . V.img b
+    inputs = V.filename a' . V.img b
     outputs = V.void
 
 --
