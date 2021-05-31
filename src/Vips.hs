@@ -7,10 +7,12 @@ module Vips
   ( vips
   , module Vips.VipsIO
   , module Vips.Operations
+  , module Vips.Results
   ) where
 
 import Vips.VipsIO
 import Vips.Operations
+import Vips.Results (freeBlobBuffer, freeArrayDouble, freeArrayInt)
 import qualified Vips.Internal.VipsOp as V
 
 -- | Convenient shorthand to run a vips operation
