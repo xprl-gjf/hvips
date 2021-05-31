@@ -34,7 +34,7 @@ instance IsVipsArg VipsTarget
 class IsVipsOp a where
   type Result a :: Type
   setInput :: (IsVipsArg b) => T.Text -> b -> a -> a
-  setOutput :: (VipsResult -> VipsIO (Maybe (Result a))) -> a -> a
+  setOutput :: (VipsResult -> VipsIO (Result a)) -> a -> a
 
 instance IsVipsOp (VipsOp l a) where
   type Result (VipsOp l a) = a

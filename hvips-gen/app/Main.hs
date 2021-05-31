@@ -279,7 +279,7 @@ instance HasArgument Invert "in" GV.Image
 instance HasOutput Invert "out" GV.Image
 or:
 type System = VipsOp "system" SystemResult
-data SystemResult = SystemResult { out = Maybe GV.Image, log = Maybe T.Text }
+data SystemResult = SystemResult { out = GV.Image, log = T.Text }
 instance HasArgument System "cmd-format" T.Text
 instance HasOutput System "out" GV.Image
 instance HasOutput System "log" T.Text
@@ -313,7 +313,7 @@ operationResultType'' n args =
 
 operationResultField :: VipsOperationArgInfo -> T.Text
 operationResultField a =
-  [st|#{fieldname a} :: Maybe #{toHaskell (typename a)}|]
+  [st|#{fieldname a} :: #{toHaskell (typename a)}|]
     where
       fieldname x = fmap tr $ T.unpack . name $ x
       tr '-' = '_'
@@ -330,7 +330,7 @@ outputResultType' n args =
       |out#{t} :: V.VipsOp l #{t} -> V.VipsOp l #{t}
       |out#{t} = V.setOutput $ \opResult' -> do
       |  #{fields}
-      |  return $ Just #{t} { #{assignFields} }
+      |  return $ #{t} { #{assignFields} }
       |]
     where
       t = unTypename n <> "Result"
@@ -339,7 +339,7 @@ outputResultType' n args =
 
 outputResultField' :: VipsOperationArgInfo -> T.Text
 outputResultField' a =
-  [st|#{n}' <- V.getProperty "#{n}" opResult' :: (VipsIO (Maybe #{t}))|]
+  [st|#{n}' <- V.getProperty "#{n}" opResult' :: (VipsIO #{t})|]
     where
       n = fmap tr $ T.unpack . name $ a
       t = toHaskell (typename a)
