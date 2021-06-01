@@ -32,23 +32,24 @@ The hvips bindings supports the libvips image processing operations as per the [
 
 Each libvips operation is exposed as a corresponding hvips function, with the 'vips_' prefix removed, and snake case converted to camel case. Mandatory parameters are arguments to the hvips function. Optional keyword parameters can be applied using the corresponding `Vips.Arguments` function. The complete list of arguments (mandatory and optional) for each operation can be found in [Introspection/Operations.hs](./src/Vips/Introspection/Operations.hs). By comparison, the corresponding function in [Operations.hs](./src/Vips/Operations.hs) shows the mandatory arguments.
 
-For example, the `[vips_gaussblur](https://libvips.github.io/libvips/API/current/libvips-convolution.html#vips-gaussblur)` operation takes two mandatory parameters: `in` (the source image) and `sigma`. This operation also takes up to two optional parameters: `precision` and `min_ampl`.
+For example, the [vips_gaussblur](https://libvips.github.io/libvips/API/current/libvips-convolution.html#vips-gaussblur) operation takes two mandatory parameters: `in` (the source image) and `sigma`. This operation also takes up to two optional parameters: `precision` and `min_ampl`.
 
 The corresponding hvips call is therefore:
 
 ```haskell
   let img = someImage :: GI.Vips.Image
-  let p = GI.Vips.PrecisionFloat
   let sigma = 1.2 :: Double
+  let minAmpl' = 0.025 :: Double
+  let prec' = GI.Vips.PrecisionFloat
   -- invoke vips_gaussblur with mandatory arguments only
   out <- vips . gaussblur sigma $ img
   -- alternatively, apply optional keyword arguments
   out' <- vips . blur $ img
   where
-    blur = gaussblur sigma <&> Arg.minAmpl (0.025 :: Double) . Arg.precision p 
+    blur = gaussblur sigma <&> Arg.minAmpl minAmpl' . Arg.precision prec' 
 ```
 
-### Testing
+## Testing
 
 To run tests with vips memory leak checking, run:
 ```console
