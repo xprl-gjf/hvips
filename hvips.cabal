@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 1bd82fdf4cae7cc536e89f7e18155a001b42284044aca030450887b2e331ba1d
+-- hash: c7447242f24fedf52cd109b6d06627ea8a29d60c0419609289c8628454d535b6
 
 name:           hvips
 version:        0.1.0.0
@@ -50,8 +50,6 @@ library
     , haskell-gi-base
     , haskell-gi-overloading ==0.0.*
     , text
-    , transformers
-    , unliftio-core
   if false
     other-modules:
         Paths_hvips
@@ -90,5 +88,4 @@ test-suite hvips-test
     , haskell-gi-overloading ==0.0.*
     , hspec
     , hvips
-    , transformers
   default-language: Haskell2010

@@ -16,7 +16,6 @@ module Vips.VipsIO
 import           Control.Applicative (liftA2)
 import           Control.Exception (finally)
 import           Control.Monad.Catch (MonadThrow)
-import           Control.Monad.IO.Unlift (MonadUnliftIO(..))
 import qualified Data.Text as T
 import qualified Data.GI.Base.ShortPrelude as SP (MonadIO, liftIO)
 
@@ -41,10 +40,6 @@ data VipsInit = VipsInit
 -- | initialized libvips environment within the IO monad.
 newtype VipsIO a = VipsIO { runVips :: IO a }
   deriving (Functor, Applicative, Monad, SP.MonadIO, MonadThrow)
-
-instance MonadUnliftIO VipsIO where
-  -- withRunInIO :: ((forall a. m a -> IO a) -> IO b) -> m b
-  withRunInIO inner = VipsIO $ inner runVips
 
 instance (Semigroup a) => Semigroup (VipsIO a) where
   (<>) = liftA2(<>)
