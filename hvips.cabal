@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: c7447242f24fedf52cd109b6d06627ea8a29d60c0419609289c8628454d535b6
+-- hash: 8e9fc834ee8ce6e2af9ccbc46974f70ecbd217edf5e7b5cf1de1231444e1b476
 
 name:           hvips
 version:        0.1.0.0
@@ -82,7 +82,6 @@ test-suite hvips-test
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base >=4.7 && <5
-    , gi-glib
     , gi-vips
     , haskell-gi-base
     , haskell-gi-overloading ==0.0.*

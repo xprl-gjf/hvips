@@ -10,7 +10,7 @@
 module Vips.Internal.VipsOp.GI
         ( IsVipsArg, toGValue, clearArg
         , IsVipsOutput, gValueType, fromGValue
-        , setProperty, getProperty, getNone
+        , setProperty, getProperty, clearOp
         , vipsOp, vipsForeignOp, runOp
         )
 where
@@ -29,7 +29,7 @@ import            Data.GI.Base.GType (gtypeInvalid)
 import            Data.GI.Base.GValue (GValue(..))
 import qualified  Data.GI.Base.GValue as GValue
                     ( toGValue, fromGValue, newGValue, buildGValue, unsetGValue
-                    , set_enum
+                    , get_enum, set_enum
                     , gvalueGType_
                     )
 import qualified  Data.GI.Base.ManagedPtr as B.ManagedPtr
@@ -255,8 +255,7 @@ instance IsVipsOutput GV.Blob where
 
 instance IsVipsOutput GV.Angle where
   gValueType = GV.glibType @GV.Angle
-  -- FIXME
-  fromGValue = undefined
+  fromGValue = fromEnumGValue'
 
 instance IsVipsOutput GV.ForeignFlags where
   gValueType = GV.glibType @GV.ForeignFlags
@@ -275,6 +274,9 @@ fromMaybe' Nothing = do
     <> "Expected a value of type \"" <> typeName <> "\", got Nothing."
     <> S.prettyCallStack S.callStack
 
+fromEnumGValue' :: (Enum a) => GValue -> IO a
+fromEnumGValue' v =
+  toEnum . convert <$> B.ManagedPtr.withManagedPtr v GValue.get_enum
 
 type Op = GV.Operation
 
@@ -297,12 +299,6 @@ runOp op = liftIO $ do
   clearOp' op     -- on success, the operation is now referenced by the cache
   return result
 
--- |Clear the GObject references for a vips operation
-clearOp' :: Op -> IO ()
-clearOp' op = do
-  GV.objectUnrefOutputs op
-  GObject.objectUnref op
-
 setProperty :: (IsVipsArg a) => T.Text -> a -> Op -> VipsIO Op
 setProperty l a op = liftIO $ do
   GObject.objectSetProperty op l =<< toGValue a
@@ -315,12 +311,16 @@ getProperty l op = liftIO $ do
   GObject.objectGetProperty op l v
   result <- fromGValue v
   B.ManagedPtr.withManagedPtr v GValue.unsetGValue
-  clearOp' op
   return result
 
--- |Alternative to `getProperty` for vips operations that
--- |do not return a result.
---  N.B. some result function _must_ be called to clear the
---  GObject references.
-getNone :: Op -> VipsIO ()
-getNone op = liftIO $ clearOp' op
+-- |Clear the GObject references for a vips operation.
+-- IMPORTANT! To prevent memory leaks, this MUST be
+-- executed once the outputs have been retrieved from
+-- the executed operation.
+clearOp :: Op -> VipsIO ()
+clearOp = liftIO . clearOp'
+
+clearOp' :: Op -> IO ()
+clearOp' op = do
+  GV.objectUnrefOutputs $! op
+  GObject.objectUnref $! op

@@ -70,7 +70,7 @@ setInput t a v = v { getOp = getOp' }
 setOutput :: (VipsResult -> VipsIO a)   -- ^the result output function
           -> VipsOp l a                 -- ^the operation from which the result will be retrieved
           -> VipsOp l a
-setOutput x op = op { getOutput = x }
+setOutput f op = op { getOutput = returnResult' f }
 
 -- |Set the result function for a VipsOp that has no return value
 void :: VipsOp l () -> VipsOp l ()
@@ -81,4 +81,10 @@ void op = op { getOutput = returnVoid' }
 --  N.B. some return value function _must_ be called to ensure that the
 --  underlying GObject is unreferenced and disposed.
 returnVoid' :: VipsResult -> VipsIO ()
-returnVoid' = V.getNone . fromResult
+returnVoid' = V.clearOp . fromResult
+
+returnResult' :: (VipsResult -> VipsIO a) -> VipsResult -> VipsIO a
+returnResult' f x = do
+  result <- f x
+  V.clearOp . fromResult $ x
+  return result
