@@ -8,10 +8,10 @@ Experimental API for the [libvips](https://libvips.github.io/libvips/) image pro
 Proof-of-concept only, but functional. Includes code for all libvips v8.10.6 operations. Sample `hvips-exe` demonstrates applying an inverse transform and saving an image, with no GObject memory leaks.
 
 Still TODO:
-* Support returning 'flags' values from operations (e.g. `GI.Vips.ForeignFlags`).
+* Add optional parameters to foreign operations (loadImage, saveImage).
+* Add remaining foreign operations (loadImageBuffer, saveImageBuffer, etc).
 * Support custom 'VipsSource' and 'VipsTargets', with callbacks to read/write image data.
-
-It is also likely that changes will be required to support _mutable_ operations such as the various `DrawXXX` operations. See, for example, [ruby-vips](https://libvips.github.io/libvips/2021/03/08/ruby-vips-mutate.html) and [netvips](https://github.com/kleisauke/net-vips/issues/119) references for this issue.
+* Implement efficient support for _mutable_ operations such as the various `DrawXXX` operations. See, for example, [ruby-vips](https://libvips.github.io/libvips/2021/03/08/ruby-vips-mutate.html) and [netvips](https://github.com/kleisauke/net-vips/issues/119) references for this issue.
 
 ## Quick-start
 
@@ -25,6 +25,28 @@ stack exec hvips-exe -- -c <infile> <outfile>`
 ```
 
 Infile and outfile may be different types. The type of outfile is determined by the file extension, e.g `hvips.exe img.jpg img.png`. Supported image types depend on the build of libvips; see the [libvips README](https://github.com/libvips/libvips#optional-dependencies).
+
+### Mapping libvips operations to hvips functions
+
+The hvips bindings supports the libvips image processing operations as per the [libvips docs](https://libvips.github.io/libvips/API/current/func-list.html).
+
+Each libvips operation is exposed as a corresponding hvips function, with the 'vips_' prefix removed, and snake case converted to camel case. Mandatory parameters are arguments to the hvips function. Optional keyword parameters can be applied using the corresponding `Vips.Arguments` function. The complete list of arguments (mandatory and optional) for each operation can be found in [Introspection/Operations.hs](./src/Vips/Introspection/Operations.hs). By comparison, the corresponding function in [Operations.hs](./src/Vips/Operations.hs) shows the mandatory arguments.
+
+For example, the `[vips_gaussblur](https://libvips.github.io/libvips/API/current/libvips-convolution.html#vips-gaussblur)` operation takes two mandatory parameters: `in` (the source image) and `sigma`. This operation also takes up to two optional parameters: `precision` and `min_ampl`.
+
+The corresponding hvips call is therefore:
+
+```haskell
+  let img = someImage :: GI.Vips.Image
+  let p = GI.Vips.PrecisionFloat
+  let sigma = 1.2 :: Double
+  -- invoke vips_gaussblur with mandatory arguments only
+  out <- vips . gaussblur sigma $ img
+  -- alternatively, apply optional keyword arguments
+  out' <- vips . blur $ img
+  where
+    blur = gaussblur sigma <&> Arg.minAmpl (0.025 :: Double) . Arg.precision p 
+```
 
 ### Testing
 

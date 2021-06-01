@@ -6,10 +6,11 @@ import Data.Function ((&))
 import Test.Hspec
 
 import           Vips
+import qualified Vips as V (AutorotResult(..), PngloadBufferResult(..))
 import qualified Vips.Arguments as Arg
-import qualified Vips.Introspection.Operations as Ops (AutorotResult(..))
 import qualified GI.Vips as GV (Direction(..), arrayDoubleGet)
 import qualified GI.Vips.Enums as GV (Angle(..))
+import qualified GI.Vips.Flags as GV (ForeignFlags(..))
 import qualified GI.Vips.Functions as GV (cacheSetMax)
 import qualified GI.Vips.Objects.Image as GV (imageImageSetInt)
 
@@ -52,12 +53,19 @@ main = withVips config . liftIO . hspec $ beforeAll_ configureCache $ do
       values!!1 `shouldBe` (5 :: Double)
       runVips $ freeArrayDouble point
 
-
   describe "image operation that returns an enum" $ do
     it "performs an operation that returns an enum" $ example $ do
       xyImg <- runVips $ vips (xyz 32 32)
       GV.imageImageSetInt xyImg "orientation" 3
       result <- runVips $ vips . autorot $ xyImg
-      let enumVal = Ops.angle result
+      let enumVal = V.angle result
       enumVal `shouldBe` GV.AngleD180
-      return ()
+
+  describe "image operation that returns flags" $ do
+    it "performs an operation that returns some flags" $ example $ do
+      buffer <- runVips $ vips (black 128 128) >>= vips . pngsaveBuffer
+      result <- runVips $ vips (pngloadBuffer buffer)
+      let flags' = V.flags result
+      flags' `shouldBe` GV.ForeignFlagsSequential
+      runVips $ freeBlobBuffer buffer
+      -- FIXME: this test leaks 1 x VipsArea

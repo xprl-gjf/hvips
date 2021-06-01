@@ -30,6 +30,7 @@ import            Data.GI.Base.GValue (GValue(..))
 import qualified  Data.GI.Base.GValue as GValue
                     ( toGValue, fromGValue, newGValue, buildGValue, unsetGValue
                     , get_enum, set_enum
+                    , get_flags
                     , gvalueGType_
                     )
 import qualified  Data.GI.Base.ManagedPtr as B.ManagedPtr
@@ -259,8 +260,7 @@ instance IsVipsOutput GV.Angle where
 
 instance IsVipsOutput GV.ForeignFlags where
   gValueType = GV.glibType @GV.ForeignFlags
-  -- FIXME
-  fromGValue = undefined
+  fromGValue = fromFlagsGValue'
 
 fromMaybeGValue' :: (IsVipsOutput a, GV.IsGValue (Maybe a)) => GValue -> IO a
 fromMaybeGValue' = fromMaybe' <=< GValue.fromGValue
@@ -277,6 +277,10 @@ fromMaybe' Nothing = do
 fromEnumGValue' :: (Enum a) => GValue -> IO a
 fromEnumGValue' v =
   toEnum . convert <$> B.ManagedPtr.withManagedPtr v GValue.get_enum
+
+fromFlagsGValue' :: (Enum a) => GValue -> IO a
+fromFlagsGValue' v =
+  toEnum . convert <$> B.ManagedPtr.withManagedPtr v GValue.get_flags
 
 type Op = GV.Operation
 
