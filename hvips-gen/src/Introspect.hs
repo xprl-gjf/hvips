@@ -19,7 +19,7 @@ import qualified Data.Text as T
 import qualified Foreign.Ptr as FP
 import qualified Foreign.StablePtr as FSP
 import qualified Foreign.ForeignPtr as FFP
-import           GHC.Stack
+import qualified GHC.Stack as S
 
 import qualified Data.GI.Base.BasicTypes as B (GParamSpec, GType, CGType, gtypeToCGType, glibType)
 import qualified Data.GI.Base.GValue as GValue (gvalueType)
@@ -32,7 +32,7 @@ import qualified GI.Vips as V
 
 -- |Get the list of GTypes for all known Vips operations
 --
-listVipsOperations :: (HasCallStack) => IO [B.GType]
+listVipsOperations :: (S.HasCallStack) => IO [B.GType]
 listVipsOperations = do
   vipsOperations' <- newIORef ([] :: [B.GType])
   vipsOperationsPtr <- FSP.newStablePtr vipsOperations'
@@ -42,11 +42,11 @@ listVipsOperations = do
   readIORef vipsOperations'
 
 -- |Add a vips operation GType to the list of all known vips operations
-listVipsOperation' :: (HasCallStack) =>
-  B.GType ->                    -- ^ the GType for the Vips operation that has been found
-  FP.Ptr () ->                  -- ^client data ptr; expected to be a StablePtr to an IORef [GType]
-  FP.Ptr () ->                  -- ^client data ptr; ignored
-  IO (FP.Ptr ())
+listVipsOperation' :: (S.HasCallStack)
+  => B.GType                    -- ^ the GType for the Vips operation that has been found
+  -> FP.Ptr ()                  -- ^ client data ptr; expected to be a StablePtr to an IORef [GType]
+  -> FP.Ptr ()                  -- ^ client data ptr; ignored
+  -> IO (FP.Ptr ())
 listVipsOperation' t a _ = do
   let pVipsOps = FSP.castPtrToStablePtr a :: FSP.StablePtr (IORef [B.GType])
   vipsOps <- FSP.deRefStablePtr pVipsOps
@@ -54,20 +54,19 @@ listVipsOperation' t a _ = do
   typeMap t listVipsOperation' a FP.nullPtr   -- recursively fetch subtypes
 
 foreign import ccall "vips_type_map" vips_type_map ::
-  B.CGType ->                   -- ^base type
-  FP.FunPtr V.C_TypeMap2Fn ->   -- ^callback function
-  FP.Ptr () ->                  -- ^client data ptr
-  FP.Ptr () ->                  -- ^client data ptr
-  IO (FP.Ptr ())
+     B.CGType                   -- ^base type
+  -> FP.FunPtr V.C_TypeMap2Fn   -- ^callback function
+  -> FP.Ptr ()                  -- ^client data ptr
+  -> FP.Ptr ()                  -- ^client data ptr
+  -> IO (FP.Ptr ())
 
 -- |Map a function over the all sub-types of the given base GType
 --
-typeMap ::
-  B.GType ->                    -- ^base type, for which all children will be mapped over
-  V.TypeMap2Fn ->              -- ^function to be called for each child type
-  FP.Ptr a ->                   -- ^client data ptr
-  FP.Ptr b ->                   -- ^client data ptr
-  IO (FP.Ptr ())
+typeMap :: B.GType              -- ^base type, for which all children will be mapped over
+        -> V.TypeMap2Fn         -- ^function to be called for each child type
+        -> FP.Ptr a             -- ^client data ptr
+        -> FP.Ptr b             -- ^client data ptr
+        -> IO (FP.Ptr ())
 typeMap t cb p1 p2 = do
   let t' = B.gtypeToCGType t
   let p1' = FP.castPtr p1 :: FP.Ptr ()
@@ -107,14 +106,13 @@ listVipsOperationArgs op = do
 
 -- |Add the VipsOperationArgInfo for an individual argument to the
 --  list of all known arguments.
-listVipsOperationArg' ::
-  V.Object ->                 -- ^the object to which this argument belongs
-  B.GParamSpec ->             -- ^the param spec for this argument
-  V.ArgumentClass ->          -- ^the argument class
-  V.ArgumentInstance ->       -- ^the argument instance
-  FP.Ptr () ->                -- ^client data ptr; expected to be a StablePtr to an IORef [VipsOperationArgInfo]
-  FP.Ptr () ->                -- ^client data ptr; ignored
-  IO (FP.Ptr ())
+listVipsOperationArg' :: V.Object             -- ^the object to which this argument belongs
+                      -> B.GParamSpec         -- ^the param spec for this argument
+                      -> V.ArgumentClass      -- ^the argument class
+                      -> V.ArgumentInstance   -- ^the argument instance
+                      -> FP.Ptr ()            -- ^client data ptr; expected to be a StablePtr to an IORef [VipsOperationArgInfo]
+                      -> FP.Ptr ()            -- ^client data ptr; ignored
+                      -> IO (FP.Ptr ())
 listVipsOperationArg' obj pspec cls inst a _ = do
   let pArgs = FSP.castPtrToStablePtr a :: FSP.StablePtr (IORef [VipsOperationArgInfo])
   args <- FSP.deRefStablePtr pArgs
@@ -123,12 +121,11 @@ listVipsOperationArg' obj pspec cls inst a _ = do
   return FP.nullPtr
 
 -- |Make a new VipsOperationArgInfo.
-mkVipsOperationArgInfo' ::
-  V.Object ->
-  B.GParamSpec ->
-  V.ArgumentClass ->
-  V.ArgumentInstance ->
-  IO VipsOperationArgInfo
+mkVipsOperationArgInfo' :: V.Object
+                        -> B.GParamSpec
+                        -> V.ArgumentClass
+                        -> V.ArgumentInstance
+                        -> IO VipsOperationArgInfo
 mkVipsOperationArgInfo' obj pspec cls _ = do
   owner' <- V.unsafeCastTo V.Operation obj
   name' <- ParamSpec.paramSpecGetName pspec
@@ -150,20 +147,19 @@ mkVipsOperationArgInfo' obj pspec cls _ = do
          }
 
 foreign import ccall "vips_argument_map" vips_argument_map ::
-  FP.Ptr V.Object ->             -- ^object whose args should be enumerated
-  FP.FunPtr V.C_ArgumentMapFn -> -- ^function to be called for each argument
-  FP.Ptr () ->                   -- ^client data ptr
-  FP.Ptr () ->                   -- ^client data ptr
-  IO (FP.Ptr ())
+     FP.Ptr V.Object             -- ^object whose args should be enumerated
+  -> FP.FunPtr V.C_ArgumentMapFn -- ^function to be called for each argument
+  -> FP.Ptr ()                   -- ^client data ptr
+  -> FP.Ptr ()                   -- ^client data ptr
+  -> IO (FP.Ptr ())
 
 -- |Map a function over all the arguments for the given object.
 --
-argumentMap ::
-  V.Object ->                   -- ^object whose args should be enumerated
-  V.ArgumentMapFn ->            -- ^function to be called for each argument
-  FP.Ptr a ->                   -- ^client data ptr
-  FP.Ptr b ->                   -- ^client data ptr
-  IO (FP.Ptr ())
+argumentMap :: V.Object          -- ^object whose args should be enumerated
+            -> V.ArgumentMapFn   -- ^function to be called for each argument
+            -> FP.Ptr a          -- ^client data ptr
+            -> FP.Ptr b          -- ^client data ptr
+            -> IO (FP.Ptr ())
 argumentMap obj cb p1 p2 = do
   let p1' = FP.castPtr p1 :: FP.Ptr ()
   let p2' = FP.castPtr p2 :: FP.Ptr ()

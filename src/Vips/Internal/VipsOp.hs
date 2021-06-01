@@ -57,20 +57,19 @@ runVips op = do
   getOutput op result
 
 -- |Set an input argument value on a VipsOp
-setInput :: (V.IsVipsArg a) =>
-  T.Text ->       -- ^the argument name
-  a ->            -- ^the argument value
-  VipsOp l b ->   -- ^the operation to which the argument will be applied
-  VipsOp l b      -- ^returns the modified operation
+setInput :: (V.IsVipsArg a)
+  => T.Text         -- ^the argument name
+  -> a              -- ^the argument value
+  -> VipsOp l b     -- ^the operation to which the argument will be applied
+  -> VipsOp l b     -- ^returns the modified operation
 setInput t a v = v { getOp = getOp' }
   where
     getOp' = getOp v >>= V.setProperty t a
 
 -- |Set the result output function for a VipsOp
-setOutput :: 
-  (VipsResult -> VipsIO a) ->   -- ^the result output function
-  VipsOp l a ->                 -- ^the operation from which the result will be retrieved
-  VipsOp l a
+setOutput :: (VipsResult -> VipsIO a)   -- ^the result output function
+          -> VipsOp l a                 -- ^the operation from which the result will be retrieved
+          -> VipsOp l a
 setOutput x op = op { getOutput = x }
 
 -- |Set the result function for a VipsOp that has no return value

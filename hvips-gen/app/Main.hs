@@ -428,7 +428,7 @@ operationArgs' n inst f args = mconcat $ arg <$> f args
 blurb' :: VipsOperationArgInfo -> T.Text
 blurb' a = case blurb a of
   Nothing -> ""
-  Just b -> [st|-- ^#{b}|]
+  Just b -> [st|-- #{b}|]
 
 params :: ArgList -> ArgList
 params = sortOn (Ord.Down . priority) . filter (isParam . argumentFlags)

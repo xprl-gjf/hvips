@@ -217,7 +217,7 @@ class IsVipsOutput a where
   gValueType :: IO GType
   fromGValue :: GValue -> IO a
 
-instance IsVipsOutput () where        -- ^this is never used, but is necessary to allow IsVipsOp instances
+instance IsVipsOutput () where        -- this is never used, but is necessary to allow IsVipsOp instances.
   gValueType = return gtypeInvalid
   fromGValue _ = return ()
 
