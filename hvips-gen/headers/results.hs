@@ -37,6 +37,13 @@ freeArrayInt = SP.liftIO . GI.freeBoxed
 -- Vips named result properties:
 --
 
+outImgLoadResult :: V.VipsOp l ImgLoadResult -> V.VipsOp l ImgLoadResult
+outImgLoadResult = V.setOutput $ \opResult' -> do
+  out' <- V.getProperty "out" opResult' :: (VipsIO GV.Image)
+  flags' <- V.getProperty "flags" opResult' :: (VipsIO GV.ForeignFlags)
+  return $ ImgLoadResult { out = out', flags = flags' }
+
+
 -- Note:
 -- output "out" of type Image is aliased as "outImg"
 --

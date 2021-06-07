@@ -68,3 +68,5 @@ instance HasArgument SaveImage "filename" T.Text
 --
 -- Vips image operations:
 --
+
+data ImgLoadResult = ImgLoadResult { out :: GV.Image, flags :: GV.ForeignFlags }

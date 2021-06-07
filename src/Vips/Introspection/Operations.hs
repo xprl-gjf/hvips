@@ -69,9 +69,11 @@ instance HasArgument SaveImage "filename" T.Text
 -- Vips image operations:
 --
 
+data ImgLoadResult = ImgLoadResult { out :: GV.Image, flags :: GV.ForeignFlags }
+
 --
 -- The following code has been automatically generated using hvips-gen,
--- from libvips 8.10.6-Tue May 18 11:07:36 UTC 2021
+-- from libvips 8.10.6-Tue Jun  1 16:02:28 UTC 2021
 --
 
 
@@ -1136,8 +1138,7 @@ instance HasArgument Csvsave "strip" Bool                   -- Strip all metadat
 instance HasArgument Csvsave "background" GV.ArrayDouble    -- Background value
 instance HasArgument Csvsave "page-height" Int32            -- Set page height for multipage save
 
-type HeifloadSource = VipsOp "heifload_source" HeifloadSourceResult
-data HeifloadSourceResult = HeifloadSourceResult { out :: GV.Image, flags :: GV.ForeignFlags }
+type HeifloadSource = VipsOp "heifload_source" ImgLoadResult
 instance HasArgument HeifloadSource "source" VipsSource     -- Source to load from
 instance HasArgument HeifloadSource "page" Int32            -- Load this page from the file
 instance HasArgument HeifloadSource "n" Int32               -- Load this many pages
@@ -1148,8 +1149,7 @@ instance HasArgument HeifloadSource "fail" Bool             -- Fail on first err
 instance HasOutput HeifloadSource "out" GV.Image            -- Output image
 instance HasOutput HeifloadSource "flags" GV.ForeignFlags   -- Flags for this file
 
-type HeifloadBuffer = VipsOp "heifload_buffer" HeifloadBufferResult
-data HeifloadBufferResult = HeifloadBufferResult { out :: GV.Image, flags :: GV.ForeignFlags }
+type HeifloadBuffer = VipsOp "heifload_buffer" ImgLoadResult
 instance HasArgument HeifloadBuffer "buffer" GV.Blob        -- Buffer to load from
 instance HasArgument HeifloadBuffer "page" Int32            -- Load this page from the file
 instance HasArgument HeifloadBuffer "n" Int32               -- Load this many pages
@@ -1160,8 +1160,7 @@ instance HasArgument HeifloadBuffer "fail" Bool             -- Fail on first err
 instance HasOutput HeifloadBuffer "out" GV.Image            -- Output image
 instance HasOutput HeifloadBuffer "flags" GV.ForeignFlags   -- Flags for this file
 
-type Heifload = VipsOp "heifload" HeifloadResult
-data HeifloadResult = HeifloadResult { out :: GV.Image, flags :: GV.ForeignFlags }
+type Heifload = VipsOp "heifload" ImgLoadResult
 instance HasArgument Heifload "filename" T.Text             -- Filename to load from
 instance HasArgument Heifload "page" Int32                  -- Load this page from the file
 instance HasArgument Heifload "n" Int32                     -- Load this many pages
@@ -1172,8 +1171,7 @@ instance HasArgument Heifload "fail" Bool                   -- Fail on first err
 instance HasOutput Heifload "out" GV.Image                  -- Output image
 instance HasOutput Heifload "flags" GV.ForeignFlags         -- Flags for this file
 
-type Openexrload = VipsOp "openexrload" OpenexrloadResult
-data OpenexrloadResult = OpenexrloadResult { out :: GV.Image, flags :: GV.ForeignFlags }
+type Openexrload = VipsOp "openexrload" ImgLoadResult
 instance HasArgument Openexrload "filename" T.Text          -- Filename to load from
 instance HasArgument Openexrload "memory" Bool              -- Force open via memory
 instance HasArgument Openexrload "access" GV.Access         -- Required access pattern for this file
@@ -1181,8 +1179,7 @@ instance HasArgument Openexrload "fail" Bool                -- Fail on first err
 instance HasOutput Openexrload "out" GV.Image               -- Output image
 instance HasOutput Openexrload "flags" GV.ForeignFlags      -- Flags for this file
 
-type Fitsload = VipsOp "fitsload" FitsloadResult
-data FitsloadResult = FitsloadResult { out :: GV.Image, flags :: GV.ForeignFlags }
+type Fitsload = VipsOp "fitsload" ImgLoadResult
 instance HasArgument Fitsload "filename" T.Text             -- Filename to load from
 instance HasArgument Fitsload "memory" Bool                 -- Force open via memory
 instance HasArgument Fitsload "access" GV.Access            -- Required access pattern for this file
@@ -1190,8 +1187,7 @@ instance HasArgument Fitsload "fail" Bool                   -- Fail on first err
 instance HasOutput Fitsload "out" GV.Image                  -- Output image
 instance HasOutput Fitsload "flags" GV.ForeignFlags         -- Flags for this file
 
-type MagickloadBuffer = VipsOp "magickload_buffer" MagickloadBufferResult
-data MagickloadBufferResult = MagickloadBufferResult { out :: GV.Image, flags :: GV.ForeignFlags }
+type MagickloadBuffer = VipsOp "magickload_buffer" ImgLoadResult
 instance HasArgument MagickloadBuffer "buffer" GV.Blob      -- Buffer to load from
 instance HasArgument MagickloadBuffer "density" T.Text      -- Canvas resolution for rendering vector formats like SVG
 instance HasArgument MagickloadBuffer "page" Int32          -- Load this page from the file
@@ -1202,8 +1198,7 @@ instance HasArgument MagickloadBuffer "fail" Bool           -- Fail on first err
 instance HasOutput MagickloadBuffer "out" GV.Image          -- Output image
 instance HasOutput MagickloadBuffer "flags" GV.ForeignFlags  -- Flags for this file
 
-type Magickload = VipsOp "magickload" MagickloadResult
-data MagickloadResult = MagickloadResult { out :: GV.Image, flags :: GV.ForeignFlags }
+type Magickload = VipsOp "magickload" ImgLoadResult
 instance HasArgument Magickload "filename" T.Text           -- Filename to load from
 instance HasArgument Magickload "density" T.Text            -- Canvas resolution for rendering vector formats like SVG
 instance HasArgument Magickload "page" Int32                -- Load this page from the file
@@ -1214,8 +1209,7 @@ instance HasArgument Magickload "fail" Bool                 -- Fail on first err
 instance HasOutput Magickload "out" GV.Image                -- Output image
 instance HasOutput Magickload "flags" GV.ForeignFlags       -- Flags for this file
 
-type TiffloadSource = VipsOp "tiffload_source" TiffloadSourceResult
-data TiffloadSourceResult = TiffloadSourceResult { out :: GV.Image, flags :: GV.ForeignFlags }
+type TiffloadSource = VipsOp "tiffload_source" ImgLoadResult
 instance HasArgument TiffloadSource "source" VipsSource     -- Source to load from
 instance HasArgument TiffloadSource "page" Int32            -- Load this page from the image
 instance HasArgument TiffloadSource "n" Int32               -- Load this many pages
@@ -1227,8 +1221,7 @@ instance HasArgument TiffloadSource "fail" Bool             -- Fail on first err
 instance HasOutput TiffloadSource "out" GV.Image            -- Output image
 instance HasOutput TiffloadSource "flags" GV.ForeignFlags   -- Flags for this file
 
-type TiffloadBuffer = VipsOp "tiffload_buffer" TiffloadBufferResult
-data TiffloadBufferResult = TiffloadBufferResult { out :: GV.Image, flags :: GV.ForeignFlags }
+type TiffloadBuffer = VipsOp "tiffload_buffer" ImgLoadResult
 instance HasArgument TiffloadBuffer "buffer" GV.Blob        -- Buffer to load from
 instance HasArgument TiffloadBuffer "page" Int32            -- Load this page from the image
 instance HasArgument TiffloadBuffer "n" Int32               -- Load this many pages
@@ -1240,8 +1233,7 @@ instance HasArgument TiffloadBuffer "fail" Bool             -- Fail on first err
 instance HasOutput TiffloadBuffer "out" GV.Image            -- Output image
 instance HasOutput TiffloadBuffer "flags" GV.ForeignFlags   -- Flags for this file
 
-type Tiffload = VipsOp "tiffload" TiffloadResult
-data TiffloadResult = TiffloadResult { out :: GV.Image, flags :: GV.ForeignFlags }
+type Tiffload = VipsOp "tiffload" ImgLoadResult
 instance HasArgument Tiffload "filename" T.Text             -- Filename to load from
 instance HasArgument Tiffload "page" Int32                  -- Load this page from the image
 instance HasArgument Tiffload "n" Int32                     -- Load this many pages
@@ -1253,8 +1245,7 @@ instance HasArgument Tiffload "fail" Bool                   -- Fail on first err
 instance HasOutput Tiffload "out" GV.Image                  -- Output image
 instance HasOutput Tiffload "flags" GV.ForeignFlags         -- Flags for this file
 
-type WebploadSource = VipsOp "webpload_source" WebploadSourceResult
-data WebploadSourceResult = WebploadSourceResult { out :: GV.Image, flags :: GV.ForeignFlags }
+type WebploadSource = VipsOp "webpload_source" ImgLoadResult
 instance HasArgument WebploadSource "source" VipsSource     -- Source to load from
 instance HasArgument WebploadSource "page" Int32            -- Load this page from the file
 instance HasArgument WebploadSource "n" Int32               -- Load this many pages
@@ -1265,8 +1256,7 @@ instance HasArgument WebploadSource "fail" Bool             -- Fail on first err
 instance HasOutput WebploadSource "out" GV.Image            -- Output image
 instance HasOutput WebploadSource "flags" GV.ForeignFlags   -- Flags for this file
 
-type WebploadBuffer = VipsOp "webpload_buffer" WebploadBufferResult
-data WebploadBufferResult = WebploadBufferResult { out :: GV.Image, flags :: GV.ForeignFlags }
+type WebploadBuffer = VipsOp "webpload_buffer" ImgLoadResult
 instance HasArgument WebploadBuffer "buffer" GV.Blob        -- Buffer to load from
 instance HasArgument WebploadBuffer "page" Int32            -- Load this page from the file
 instance HasArgument WebploadBuffer "n" Int32               -- Load this many pages
@@ -1277,8 +1267,7 @@ instance HasArgument WebploadBuffer "fail" Bool             -- Fail on first err
 instance HasOutput WebploadBuffer "out" GV.Image            -- Output image
 instance HasOutput WebploadBuffer "flags" GV.ForeignFlags   -- Flags for this file
 
-type Webpload = VipsOp "webpload" WebploadResult
-data WebploadResult = WebploadResult { out :: GV.Image, flags :: GV.ForeignFlags }
+type Webpload = VipsOp "webpload" ImgLoadResult
 instance HasArgument Webpload "filename" T.Text             -- Filename to load from
 instance HasArgument Webpload "page" Int32                  -- Load this page from the file
 instance HasArgument Webpload "n" Int32                     -- Load this many pages
@@ -1289,8 +1278,7 @@ instance HasArgument Webpload "fail" Bool                   -- Fail on first err
 instance HasOutput Webpload "out" GV.Image                  -- Output image
 instance HasOutput Webpload "flags" GV.ForeignFlags         -- Flags for this file
 
-type JpegloadSource = VipsOp "jpegload_source" JpegloadSourceResult
-data JpegloadSourceResult = JpegloadSourceResult { out :: GV.Image, flags :: GV.ForeignFlags }
+type JpegloadSource = VipsOp "jpegload_source" ImgLoadResult
 instance HasArgument JpegloadSource "source" VipsSource     -- Source to load from
 instance HasArgument JpegloadSource "shrink" Int32          -- Shrink factor on load
 instance HasArgument JpegloadSource "autorotate" Bool       -- Rotate image using exif orientation
@@ -1300,8 +1288,7 @@ instance HasArgument JpegloadSource "fail" Bool             -- Fail on first err
 instance HasOutput JpegloadSource "out" GV.Image            -- Output image
 instance HasOutput JpegloadSource "flags" GV.ForeignFlags   -- Flags for this file
 
-type JpegloadBuffer = VipsOp "jpegload_buffer" JpegloadBufferResult
-data JpegloadBufferResult = JpegloadBufferResult { out :: GV.Image, flags :: GV.ForeignFlags }
+type JpegloadBuffer = VipsOp "jpegload_buffer" ImgLoadResult
 instance HasArgument JpegloadBuffer "buffer" GV.Blob        -- Buffer to load from
 instance HasArgument JpegloadBuffer "shrink" Int32          -- Shrink factor on load
 instance HasArgument JpegloadBuffer "autorotate" Bool       -- Rotate image using exif orientation
@@ -1311,8 +1298,7 @@ instance HasArgument JpegloadBuffer "fail" Bool             -- Fail on first err
 instance HasOutput JpegloadBuffer "out" GV.Image            -- Output image
 instance HasOutput JpegloadBuffer "flags" GV.ForeignFlags   -- Flags for this file
 
-type Jpegload = VipsOp "jpegload" JpegloadResult
-data JpegloadResult = JpegloadResult { out :: GV.Image, flags :: GV.ForeignFlags }
+type Jpegload = VipsOp "jpegload" ImgLoadResult
 instance HasArgument Jpegload "filename" T.Text             -- Filename to load from
 instance HasArgument Jpegload "shrink" Int32                -- Shrink factor on load
 instance HasArgument Jpegload "autorotate" Bool             -- Rotate image using exif orientation
@@ -1322,8 +1308,7 @@ instance HasArgument Jpegload "fail" Bool                   -- Fail on first err
 instance HasOutput Jpegload "out" GV.Image                  -- Output image
 instance HasOutput Jpegload "flags" GV.ForeignFlags         -- Flags for this file
 
-type PngloadSource = VipsOp "pngload_source" PngloadSourceResult
-data PngloadSourceResult = PngloadSourceResult { out :: GV.Image, flags :: GV.ForeignFlags }
+type PngloadSource = VipsOp "pngload_source" ImgLoadResult
 instance HasArgument PngloadSource "source" VipsSource      -- Source to load from
 instance HasArgument PngloadSource "memory" Bool            -- Force open via memory
 instance HasArgument PngloadSource "access" GV.Access       -- Required access pattern for this file
@@ -1331,8 +1316,7 @@ instance HasArgument PngloadSource "fail" Bool              -- Fail on first err
 instance HasOutput PngloadSource "out" GV.Image             -- Output image
 instance HasOutput PngloadSource "flags" GV.ForeignFlags    -- Flags for this file
 
-type PngloadBuffer = VipsOp "pngload_buffer" PngloadBufferResult
-data PngloadBufferResult = PngloadBufferResult { out :: GV.Image, flags :: GV.ForeignFlags }
+type PngloadBuffer = VipsOp "pngload_buffer" ImgLoadResult
 instance HasArgument PngloadBuffer "buffer" GV.Blob         -- Buffer to load from
 instance HasArgument PngloadBuffer "memory" Bool            -- Force open via memory
 instance HasArgument PngloadBuffer "access" GV.Access       -- Required access pattern for this file
@@ -1340,8 +1324,7 @@ instance HasArgument PngloadBuffer "fail" Bool              -- Fail on first err
 instance HasOutput PngloadBuffer "out" GV.Image             -- Output image
 instance HasOutput PngloadBuffer "flags" GV.ForeignFlags    -- Flags for this file
 
-type Pngload = VipsOp "pngload" PngloadResult
-data PngloadResult = PngloadResult { out :: GV.Image, flags :: GV.ForeignFlags }
+type Pngload = VipsOp "pngload" ImgLoadResult
 instance HasArgument Pngload "filename" T.Text              -- Filename to load from
 instance HasArgument Pngload "memory" Bool                  -- Force open via memory
 instance HasArgument Pngload "access" GV.Access             -- Required access pattern for this file
@@ -1349,8 +1332,7 @@ instance HasArgument Pngload "fail" Bool                    -- Fail on first err
 instance HasOutput Pngload "out" GV.Image                   -- Output image
 instance HasOutput Pngload "flags" GV.ForeignFlags          -- Flags for this file
 
-type GifloadSource = VipsOp "gifload_source" GifloadSourceResult
-data GifloadSourceResult = GifloadSourceResult { out :: GV.Image, flags :: GV.ForeignFlags }
+type GifloadSource = VipsOp "gifload_source" ImgLoadResult
 instance HasArgument GifloadSource "source" VipsSource      -- Source to load from
 instance HasArgument GifloadSource "page" Int32             -- Load this page from the file
 instance HasArgument GifloadSource "n" Int32                -- Load this many pages
@@ -1360,8 +1342,7 @@ instance HasArgument GifloadSource "fail" Bool              -- Fail on first err
 instance HasOutput GifloadSource "out" GV.Image             -- Output image
 instance HasOutput GifloadSource "flags" GV.ForeignFlags    -- Flags for this file
 
-type GifloadBuffer = VipsOp "gifload_buffer" GifloadBufferResult
-data GifloadBufferResult = GifloadBufferResult { out :: GV.Image, flags :: GV.ForeignFlags }
+type GifloadBuffer = VipsOp "gifload_buffer" ImgLoadResult
 instance HasArgument GifloadBuffer "buffer" GV.Blob         -- Buffer to load from
 instance HasArgument GifloadBuffer "page" Int32             -- Load this page from the file
 instance HasArgument GifloadBuffer "n" Int32                -- Load this many pages
@@ -1371,8 +1352,7 @@ instance HasArgument GifloadBuffer "fail" Bool              -- Fail on first err
 instance HasOutput GifloadBuffer "out" GV.Image             -- Output image
 instance HasOutput GifloadBuffer "flags" GV.ForeignFlags    -- Flags for this file
 
-type Gifload = VipsOp "gifload" GifloadResult
-data GifloadResult = GifloadResult { out :: GV.Image, flags :: GV.ForeignFlags }
+type Gifload = VipsOp "gifload" ImgLoadResult
 instance HasArgument Gifload "filename" T.Text              -- Filename to load from
 instance HasArgument Gifload "page" Int32                   -- Load this page from the file
 instance HasArgument Gifload "n" Int32                      -- Load this many pages
@@ -1382,8 +1362,7 @@ instance HasArgument Gifload "fail" Bool                    -- Fail on first err
 instance HasOutput Gifload "out" GV.Image                   -- Output image
 instance HasOutput Gifload "flags" GV.ForeignFlags          -- Flags for this file
 
-type SvgloadSource = VipsOp "svgload_source" SvgloadSourceResult
-data SvgloadSourceResult = SvgloadSourceResult { out :: GV.Image, flags :: GV.ForeignFlags }
+type SvgloadSource = VipsOp "svgload_source" ImgLoadResult
 instance HasArgument SvgloadSource "source" VipsSource      -- Source to load from
 instance HasArgument SvgloadSource "dpi" Double             -- Render at this DPI
 instance HasArgument SvgloadSource "scale" Double           -- Scale output by this factor
@@ -1394,8 +1373,7 @@ instance HasArgument SvgloadSource "fail" Bool              -- Fail on first err
 instance HasOutput SvgloadSource "out" GV.Image             -- Output image
 instance HasOutput SvgloadSource "flags" GV.ForeignFlags    -- Flags for this file
 
-type SvgloadBuffer = VipsOp "svgload_buffer" SvgloadBufferResult
-data SvgloadBufferResult = SvgloadBufferResult { out :: GV.Image, flags :: GV.ForeignFlags }
+type SvgloadBuffer = VipsOp "svgload_buffer" ImgLoadResult
 instance HasArgument SvgloadBuffer "buffer" GV.Blob         -- Buffer to load from
 instance HasArgument SvgloadBuffer "dpi" Double             -- Render at this DPI
 instance HasArgument SvgloadBuffer "scale" Double           -- Scale output by this factor
@@ -1406,8 +1384,7 @@ instance HasArgument SvgloadBuffer "fail" Bool              -- Fail on first err
 instance HasOutput SvgloadBuffer "out" GV.Image             -- Output image
 instance HasOutput SvgloadBuffer "flags" GV.ForeignFlags    -- Flags for this file
 
-type Svgload = VipsOp "svgload" SvgloadResult
-data SvgloadResult = SvgloadResult { out :: GV.Image, flags :: GV.ForeignFlags }
+type Svgload = VipsOp "svgload" ImgLoadResult
 instance HasArgument Svgload "filename" T.Text              -- Filename to load from
 instance HasArgument Svgload "dpi" Double                   -- Render at this DPI
 instance HasArgument Svgload "scale" Double                 -- Scale output by this factor
@@ -1418,8 +1395,7 @@ instance HasArgument Svgload "fail" Bool                    -- Fail on first err
 instance HasOutput Svgload "out" GV.Image                   -- Output image
 instance HasOutput Svgload "flags" GV.ForeignFlags          -- Flags for this file
 
-type PdfloadSource = VipsOp "pdfload_source" PdfloadSourceResult
-data PdfloadSourceResult = PdfloadSourceResult { out :: GV.Image, flags :: GV.ForeignFlags }
+type PdfloadSource = VipsOp "pdfload_source" ImgLoadResult
 instance HasArgument PdfloadSource "source" VipsSource      -- Source to load from
 instance HasArgument PdfloadSource "page" Int32             -- Load this page from the file
 instance HasArgument PdfloadSource "n" Int32                -- Load this many pages
@@ -1432,8 +1408,7 @@ instance HasArgument PdfloadSource "fail" Bool              -- Fail on first err
 instance HasOutput PdfloadSource "out" GV.Image             -- Output image
 instance HasOutput PdfloadSource "flags" GV.ForeignFlags    -- Flags for this file
 
-type PdfloadBuffer = VipsOp "pdfload_buffer" PdfloadBufferResult
-data PdfloadBufferResult = PdfloadBufferResult { out :: GV.Image, flags :: GV.ForeignFlags }
+type PdfloadBuffer = VipsOp "pdfload_buffer" ImgLoadResult
 instance HasArgument PdfloadBuffer "buffer" GV.Blob         -- Buffer to load from
 instance HasArgument PdfloadBuffer "page" Int32             -- Load this page from the file
 instance HasArgument PdfloadBuffer "n" Int32                -- Load this many pages
@@ -1446,8 +1421,7 @@ instance HasArgument PdfloadBuffer "fail" Bool              -- Fail on first err
 instance HasOutput PdfloadBuffer "out" GV.Image             -- Output image
 instance HasOutput PdfloadBuffer "flags" GV.ForeignFlags    -- Flags for this file
 
-type Pdfload = VipsOp "pdfload" PdfloadResult
-data PdfloadResult = PdfloadResult { out :: GV.Image, flags :: GV.ForeignFlags }
+type Pdfload = VipsOp "pdfload" ImgLoadResult
 instance HasArgument Pdfload "filename" T.Text              -- Filename to load from
 instance HasArgument Pdfload "page" Int32                   -- Load this page from the file
 instance HasArgument Pdfload "n" Int32                      -- Load this many pages
@@ -1460,8 +1434,7 @@ instance HasArgument Pdfload "fail" Bool                    -- Fail on first err
 instance HasOutput Pdfload "out" GV.Image                   -- Output image
 instance HasOutput Pdfload "flags" GV.ForeignFlags          -- Flags for this file
 
-type RadloadSource = VipsOp "radload_source" RadloadSourceResult
-data RadloadSourceResult = RadloadSourceResult { out :: GV.Image, flags :: GV.ForeignFlags }
+type RadloadSource = VipsOp "radload_source" ImgLoadResult
 instance HasArgument RadloadSource "source" VipsSource      -- Source to load from
 instance HasArgument RadloadSource "memory" Bool            -- Force open via memory
 instance HasArgument RadloadSource "access" GV.Access       -- Required access pattern for this file
@@ -1469,8 +1442,7 @@ instance HasArgument RadloadSource "fail" Bool              -- Fail on first err
 instance HasOutput RadloadSource "out" GV.Image             -- Output image
 instance HasOutput RadloadSource "flags" GV.ForeignFlags    -- Flags for this file
 
-type RadloadBuffer = VipsOp "radload_buffer" RadloadBufferResult
-data RadloadBufferResult = RadloadBufferResult { out :: GV.Image, flags :: GV.ForeignFlags }
+type RadloadBuffer = VipsOp "radload_buffer" ImgLoadResult
 instance HasArgument RadloadBuffer "buffer" GV.Blob         -- Buffer to load from
 instance HasArgument RadloadBuffer "memory" Bool            -- Force open via memory
 instance HasArgument RadloadBuffer "access" GV.Access       -- Required access pattern for this file
@@ -1478,8 +1450,7 @@ instance HasArgument RadloadBuffer "fail" Bool              -- Fail on first err
 instance HasOutput RadloadBuffer "out" GV.Image             -- Output image
 instance HasOutput RadloadBuffer "flags" GV.ForeignFlags    -- Flags for this file
 
-type Radload = VipsOp "radload" RadloadResult
-data RadloadResult = RadloadResult { out :: GV.Image, flags :: GV.ForeignFlags }
+type Radload = VipsOp "radload" ImgLoadResult
 instance HasArgument Radload "filename" T.Text              -- Filename to load from
 instance HasArgument Radload "memory" Bool                  -- Force open via memory
 instance HasArgument Radload "access" GV.Access             -- Required access pattern for this file
@@ -1487,8 +1458,7 @@ instance HasArgument Radload "fail" Bool                    -- Fail on first err
 instance HasOutput Radload "out" GV.Image                   -- Output image
 instance HasOutput Radload "flags" GV.ForeignFlags          -- Flags for this file
 
-type PpmloadSource = VipsOp "ppmload_source" PpmloadSourceResult
-data PpmloadSourceResult = PpmloadSourceResult { out :: GV.Image, flags :: GV.ForeignFlags }
+type PpmloadSource = VipsOp "ppmload_source" ImgLoadResult
 instance HasArgument PpmloadSource "source" VipsSource      -- Source to load from
 instance HasArgument PpmloadSource "memory" Bool            -- Force open via memory
 instance HasArgument PpmloadSource "access" GV.Access       -- Required access pattern for this file
@@ -1496,8 +1466,7 @@ instance HasArgument PpmloadSource "fail" Bool              -- Fail on first err
 instance HasOutput PpmloadSource "out" GV.Image             -- Output image
 instance HasOutput PpmloadSource "flags" GV.ForeignFlags    -- Flags for this file
 
-type Ppmload = VipsOp "ppmload" PpmloadResult
-data PpmloadResult = PpmloadResult { out :: GV.Image, flags :: GV.ForeignFlags }
+type Ppmload = VipsOp "ppmload" ImgLoadResult
 instance HasArgument Ppmload "filename" T.Text              -- Filename to load from
 instance HasArgument Ppmload "memory" Bool                  -- Force open via memory
 instance HasArgument Ppmload "access" GV.Access             -- Required access pattern for this file
@@ -1505,8 +1474,7 @@ instance HasArgument Ppmload "fail" Bool                    -- Fail on first err
 instance HasOutput Ppmload "out" GV.Image                   -- Output image
 instance HasOutput Ppmload "flags" GV.ForeignFlags          -- Flags for this file
 
-type Analyzeload = VipsOp "analyzeload" AnalyzeloadResult
-data AnalyzeloadResult = AnalyzeloadResult { out :: GV.Image, flags :: GV.ForeignFlags }
+type Analyzeload = VipsOp "analyzeload" ImgLoadResult
 instance HasArgument Analyzeload "filename" T.Text          -- Filename to load from
 instance HasArgument Analyzeload "memory" Bool              -- Force open via memory
 instance HasArgument Analyzeload "access" GV.Access         -- Required access pattern for this file
@@ -1514,8 +1482,7 @@ instance HasArgument Analyzeload "fail" Bool                -- Fail on first err
 instance HasOutput Analyzeload "out" GV.Image               -- Output image
 instance HasOutput Analyzeload "flags" GV.ForeignFlags      -- Flags for this file
 
-type Vipsload = VipsOp "vipsload" VipsloadResult
-data VipsloadResult = VipsloadResult { out :: GV.Image, flags :: GV.ForeignFlags }
+type Vipsload = VipsOp "vipsload" ImgLoadResult
 instance HasArgument Vipsload "filename" T.Text             -- Filename to load from
 instance HasArgument Vipsload "memory" Bool                 -- Force open via memory
 instance HasArgument Vipsload "access" GV.Access            -- Required access pattern for this file
@@ -1523,8 +1490,7 @@ instance HasArgument Vipsload "fail" Bool                   -- Fail on first err
 instance HasOutput Vipsload "out" GV.Image                  -- Output image
 instance HasOutput Vipsload "flags" GV.ForeignFlags         -- Flags for this file
 
-type Rawload = VipsOp "rawload" RawloadResult
-data RawloadResult = RawloadResult { out :: GV.Image, flags :: GV.ForeignFlags }
+type Rawload = VipsOp "rawload" ImgLoadResult
 instance HasArgument Rawload "filename" T.Text              -- Filename to load from
 instance HasArgument Rawload "width" Int32                  -- Image width in pixels
 instance HasArgument Rawload "height" Int32                 -- Image height in pixels
@@ -1538,8 +1504,7 @@ instance HasArgument Rawload "fail" Bool                    -- Fail on first err
 instance HasOutput Rawload "out" GV.Image                   -- Output image
 instance HasOutput Rawload "flags" GV.ForeignFlags          -- Flags for this file
 
-type MatrixloadSource = VipsOp "matrixload_source" MatrixloadSourceResult
-data MatrixloadSourceResult = MatrixloadSourceResult { out :: GV.Image, flags :: GV.ForeignFlags }
+type MatrixloadSource = VipsOp "matrixload_source" ImgLoadResult
 instance HasArgument MatrixloadSource "source" VipsSource   -- Source to load from
 instance HasArgument MatrixloadSource "memory" Bool         -- Force open via memory
 instance HasArgument MatrixloadSource "access" GV.Access    -- Required access pattern for this file
@@ -1547,8 +1512,7 @@ instance HasArgument MatrixloadSource "fail" Bool           -- Fail on first err
 instance HasOutput MatrixloadSource "out" GV.Image          -- Output image
 instance HasOutput MatrixloadSource "flags" GV.ForeignFlags  -- Flags for this file
 
-type Matrixload = VipsOp "matrixload" MatrixloadResult
-data MatrixloadResult = MatrixloadResult { out :: GV.Image, flags :: GV.ForeignFlags }
+type Matrixload = VipsOp "matrixload" ImgLoadResult
 instance HasArgument Matrixload "filename" T.Text           -- Filename to load from
 instance HasArgument Matrixload "memory" Bool               -- Force open via memory
 instance HasArgument Matrixload "access" GV.Access          -- Required access pattern for this file
@@ -1556,8 +1520,7 @@ instance HasArgument Matrixload "fail" Bool                 -- Fail on first err
 instance HasOutput Matrixload "out" GV.Image                -- Output image
 instance HasOutput Matrixload "flags" GV.ForeignFlags       -- Flags for this file
 
-type CsvloadSource = VipsOp "csvload_source" CsvloadSourceResult
-data CsvloadSourceResult = CsvloadSourceResult { out :: GV.Image, flags :: GV.ForeignFlags }
+type CsvloadSource = VipsOp "csvload_source" ImgLoadResult
 instance HasArgument CsvloadSource "source" VipsSource      -- Source to load from
 instance HasArgument CsvloadSource "skip" Int32             -- Skip this many lines at the start of the file
 instance HasArgument CsvloadSource "lines" Int32            -- Read this many lines from the file
@@ -1569,8 +1532,7 @@ instance HasArgument CsvloadSource "fail" Bool              -- Fail on first err
 instance HasOutput CsvloadSource "out" GV.Image             -- Output image
 instance HasOutput CsvloadSource "flags" GV.ForeignFlags    -- Flags for this file
 
-type Csvload = VipsOp "csvload" CsvloadResult
-data CsvloadResult = CsvloadResult { out :: GV.Image, flags :: GV.ForeignFlags }
+type Csvload = VipsOp "csvload" ImgLoadResult
 instance HasArgument Csvload "filename" T.Text              -- Filename to load from
 instance HasArgument Csvload "skip" Int32                   -- Skip this many lines at the start of the file
 instance HasArgument Csvload "lines" Int32                  -- Read this many lines from the file

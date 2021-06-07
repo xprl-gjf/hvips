@@ -300,7 +300,11 @@ operationArgs n args = inputs' <> outputs'
     outputs' = operationOutputs n args
 
 operationResultType :: Nickname -> ArgList -> T.Text
-operationResultType n args = operationResultType'' (toTypename n) (outputs args)
+operationResultType n args
+  | isImgLoadResult' outputs' = ""
+  | otherwise = operationResultType'' (toTypename n) outputs'
+  where
+    outputs' = outputs args
 
 operationResultType'' :: Typename -> ArgList -> T.Text
 operationResultType'' _ [] = ""
@@ -320,7 +324,11 @@ operationResultField a =
       tr x = x
 
 outputResultType :: Nickname -> ArgList -> T.Text
-outputResultType n args = outputResultType' (toTypename n) (outputs args)
+outputResultType n args
+  | isImgLoadResult' outputs' = ""
+  | otherwise = outputResultType' (toTypename n) outputs'
+  where
+    outputs' = outputs args
 
 outputResultType' :: Typename -> ArgList -> T.Text
 outputResultType' _ [] = ""
@@ -355,7 +363,16 @@ outputAssignField' a =
       tr x = x
 
 operationResult' :: Nickname -> ArgList -> T.Text
-operationResult' n args = operationResult'' (toTypename n) (outputs args)
+operationResult' n args
+  | isImgLoadResult' outputs' = "ImgLoadResult"
+  | otherwise = operationResult'' (toTypename n) outputs'
+  where
+    outputs' = outputs args
+
+isImgLoadResult' :: ArgList -> Bool
+isImgLoadResult' args = (toHaskell . typename <$> sorted' args) == ["GV.ForeignFlags", "GV.Image"]
+  where
+    sorted' = sortOn typename
 
 operationResult'' :: Typename -> ArgList -> T.Text
 operationResult'' _ [] = "()"
@@ -403,7 +420,9 @@ operationFnInputs' args = T.intercalate " . " args'
     count = length args
 
 operationFnOutput' :: Nickname -> ArgList -> T.Text
-operationFnOutput' n args = T.pack "V." <> operationFnOutput'' n args
+operationFnOutput' n args
+  | isImgLoadResult' args  = "V.outImgLoadResult"
+  | otherwise = T.pack "V." <> operationFnOutput'' n args
 
 operationFnOutput'' :: Nickname -> ArgList -> T.Text
 operationFnOutput'' _ [] = "void"

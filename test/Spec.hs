@@ -6,7 +6,7 @@ import Data.Function ((&))
 import Test.Hspec
 
 import           Vips
-import qualified Vips as V (AutorotResult(..), PngloadBufferResult(..))
+import qualified Vips as V (AutorotResult(..), ImgLoadResult(..))
 import qualified Vips.Arguments as Arg
 import qualified GI.Vips as GV (Direction(..), arrayDoubleGet)
 import qualified GI.Vips.Enums as GV (Angle(..))

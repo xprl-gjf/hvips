@@ -56,7 +56,7 @@ saveImage a b = vipsForeignOp saver (Foreign :: Nickname "foreignSaveImage") & i
 
 --
 -- The following code has been automatically generated using hvips-gen,
--- from libvips 8.10.6-Tue May 18 11:07:36 UTC 2021
+-- from libvips 8.10.6-Tue Jun  1 16:02:28 UTC 2021
 --
 
 
@@ -982,280 +982,280 @@ heifloadSource :: VipsSource ->  HeifloadSource
 heifloadSource a = vipsOp (Lookup :: Nickname "heifload_source") & inputs & outputs
   where
     inputs = V.source a
-    outputs = V.outHeifloadSourceResult
+    outputs = V.outImgLoadResult
 
 -- |load a HEIF image
 heifloadBuffer :: GV.Blob ->  HeifloadBuffer
 heifloadBuffer a = vipsOp (Lookup :: Nickname "heifload_buffer") & inputs & outputs
   where
     inputs = V.buffer a
-    outputs = V.outHeifloadBufferResult
+    outputs = V.outImgLoadResult
 
 -- |load a HEIF image
 heifload :: T.Text ->  Heifload
 heifload a = vipsOp (Lookup :: Nickname "heifload") & inputs & outputs
   where
     inputs = V.filename a
-    outputs = V.outHeifloadResult
+    outputs = V.outImgLoadResult
 
 -- |load an OpenEXR image
 openexrload :: T.Text ->  Openexrload
 openexrload a = vipsOp (Lookup :: Nickname "openexrload") & inputs & outputs
   where
     inputs = V.filename a
-    outputs = V.outOpenexrloadResult
+    outputs = V.outImgLoadResult
 
 -- |load a FITS image
 fitsload :: T.Text ->  Fitsload
 fitsload a = vipsOp (Lookup :: Nickname "fitsload") & inputs & outputs
   where
     inputs = V.filename a
-    outputs = V.outFitsloadResult
+    outputs = V.outImgLoadResult
 
 -- |load buffer with ImageMagick7
 magickloadBuffer :: GV.Blob ->  MagickloadBuffer
 magickloadBuffer a = vipsOp (Lookup :: Nickname "magickload_buffer") & inputs & outputs
   where
     inputs = V.buffer a
-    outputs = V.outMagickloadBufferResult
+    outputs = V.outImgLoadResult
 
 -- |load file with ImageMagick7
 magickload :: T.Text ->  Magickload
 magickload a = vipsOp (Lookup :: Nickname "magickload") & inputs & outputs
   where
     inputs = V.filename a
-    outputs = V.outMagickloadResult
+    outputs = V.outImgLoadResult
 
 -- |load tiff from source
 tiffloadSource :: VipsSource ->  TiffloadSource
 tiffloadSource a = vipsOp (Lookup :: Nickname "tiffload_source") & inputs & outputs
   where
     inputs = V.source a
-    outputs = V.outTiffloadSourceResult
+    outputs = V.outImgLoadResult
 
 -- |load tiff from buffer
 tiffloadBuffer :: GV.Blob ->  TiffloadBuffer
 tiffloadBuffer a = vipsOp (Lookup :: Nickname "tiffload_buffer") & inputs & outputs
   where
     inputs = V.buffer a
-    outputs = V.outTiffloadBufferResult
+    outputs = V.outImgLoadResult
 
 -- |load tiff from file
 tiffload :: T.Text ->  Tiffload
 tiffload a = vipsOp (Lookup :: Nickname "tiffload") & inputs & outputs
   where
     inputs = V.filename a
-    outputs = V.outTiffloadResult
+    outputs = V.outImgLoadResult
 
 -- |load webp from source
 webploadSource :: VipsSource ->  WebploadSource
 webploadSource a = vipsOp (Lookup :: Nickname "webpload_source") & inputs & outputs
   where
     inputs = V.source a
-    outputs = V.outWebploadSourceResult
+    outputs = V.outImgLoadResult
 
 -- |load webp from buffer
 webploadBuffer :: GV.Blob ->  WebploadBuffer
 webploadBuffer a = vipsOp (Lookup :: Nickname "webpload_buffer") & inputs & outputs
   where
     inputs = V.buffer a
-    outputs = V.outWebploadBufferResult
+    outputs = V.outImgLoadResult
 
 -- |load webp from file
 webpload :: T.Text ->  Webpload
 webpload a = vipsOp (Lookup :: Nickname "webpload") & inputs & outputs
   where
     inputs = V.filename a
-    outputs = V.outWebploadResult
+    outputs = V.outImgLoadResult
 
 -- |load image from jpeg source
 jpegloadSource :: VipsSource ->  JpegloadSource
 jpegloadSource a = vipsOp (Lookup :: Nickname "jpegload_source") & inputs & outputs
   where
     inputs = V.source a
-    outputs = V.outJpegloadSourceResult
+    outputs = V.outImgLoadResult
 
 -- |load jpeg from buffer
 jpegloadBuffer :: GV.Blob ->  JpegloadBuffer
 jpegloadBuffer a = vipsOp (Lookup :: Nickname "jpegload_buffer") & inputs & outputs
   where
     inputs = V.buffer a
-    outputs = V.outJpegloadBufferResult
+    outputs = V.outImgLoadResult
 
 -- |load jpeg from file
 jpegload :: T.Text ->  Jpegload
 jpegload a = vipsOp (Lookup :: Nickname "jpegload") & inputs & outputs
   where
     inputs = V.filename a
-    outputs = V.outJpegloadResult
+    outputs = V.outImgLoadResult
 
 -- |load png from source
 pngloadSource :: VipsSource ->  PngloadSource
 pngloadSource a = vipsOp (Lookup :: Nickname "pngload_source") & inputs & outputs
   where
     inputs = V.source a
-    outputs = V.outPngloadSourceResult
+    outputs = V.outImgLoadResult
 
 -- |load png from buffer
 pngloadBuffer :: GV.Blob ->  PngloadBuffer
 pngloadBuffer a = vipsOp (Lookup :: Nickname "pngload_buffer") & inputs & outputs
   where
     inputs = V.buffer a
-    outputs = V.outPngloadBufferResult
+    outputs = V.outImgLoadResult
 
 -- |load png from file
 pngload :: T.Text ->  Pngload
 pngload a = vipsOp (Lookup :: Nickname "pngload") & inputs & outputs
   where
     inputs = V.filename a
-    outputs = V.outPngloadResult
+    outputs = V.outImgLoadResult
 
 -- |load GIF with giflib
 gifloadSource :: VipsSource ->  GifloadSource
 gifloadSource a = vipsOp (Lookup :: Nickname "gifload_source") & inputs & outputs
   where
     inputs = V.source a
-    outputs = V.outGifloadSourceResult
+    outputs = V.outImgLoadResult
 
 -- |load GIF with giflib
 gifloadBuffer :: GV.Blob ->  GifloadBuffer
 gifloadBuffer a = vipsOp (Lookup :: Nickname "gifload_buffer") & inputs & outputs
   where
     inputs = V.buffer a
-    outputs = V.outGifloadBufferResult
+    outputs = V.outImgLoadResult
 
 -- |load GIF with giflib
 gifload :: T.Text ->  Gifload
 gifload a = vipsOp (Lookup :: Nickname "gifload") & inputs & outputs
   where
     inputs = V.filename a
-    outputs = V.outGifloadResult
+    outputs = V.outImgLoadResult
 
 -- |load svg from source
 svgloadSource :: VipsSource ->  SvgloadSource
 svgloadSource a = vipsOp (Lookup :: Nickname "svgload_source") & inputs & outputs
   where
     inputs = V.source a
-    outputs = V.outSvgloadSourceResult
+    outputs = V.outImgLoadResult
 
 -- |load SVG with rsvg
 svgloadBuffer :: GV.Blob ->  SvgloadBuffer
 svgloadBuffer a = vipsOp (Lookup :: Nickname "svgload_buffer") & inputs & outputs
   where
     inputs = V.buffer a
-    outputs = V.outSvgloadBufferResult
+    outputs = V.outImgLoadResult
 
 -- |load SVG with rsvg
 svgload :: T.Text ->  Svgload
 svgload a = vipsOp (Lookup :: Nickname "svgload") & inputs & outputs
   where
     inputs = V.filename a
-    outputs = V.outSvgloadResult
+    outputs = V.outImgLoadResult
 
 -- |load PDF from source
 pdfloadSource :: VipsSource ->  PdfloadSource
 pdfloadSource a = vipsOp (Lookup :: Nickname "pdfload_source") & inputs & outputs
   where
     inputs = V.source a
-    outputs = V.outPdfloadSourceResult
+    outputs = V.outImgLoadResult
 
 -- |load PDF from buffer
 pdfloadBuffer :: GV.Blob ->  PdfloadBuffer
 pdfloadBuffer a = vipsOp (Lookup :: Nickname "pdfload_buffer") & inputs & outputs
   where
     inputs = V.buffer a
-    outputs = V.outPdfloadBufferResult
+    outputs = V.outImgLoadResult
 
 -- |load PDF from file
 pdfload :: T.Text ->  Pdfload
 pdfload a = vipsOp (Lookup :: Nickname "pdfload") & inputs & outputs
   where
     inputs = V.filename a
-    outputs = V.outPdfloadResult
+    outputs = V.outImgLoadResult
 
 -- |load rad from source
 radloadSource :: VipsSource ->  RadloadSource
 radloadSource a = vipsOp (Lookup :: Nickname "radload_source") & inputs & outputs
   where
     inputs = V.source a
-    outputs = V.outRadloadSourceResult
+    outputs = V.outImgLoadResult
 
 -- |load rad from buffer
 radloadBuffer :: GV.Blob ->  RadloadBuffer
 radloadBuffer a = vipsOp (Lookup :: Nickname "radload_buffer") & inputs & outputs
   where
     inputs = V.buffer a
-    outputs = V.outRadloadBufferResult
+    outputs = V.outImgLoadResult
 
 -- |load a Radiance image from a file
 radload :: T.Text ->  Radload
 radload a = vipsOp (Lookup :: Nickname "radload") & inputs & outputs
   where
     inputs = V.filename a
-    outputs = V.outRadloadResult
+    outputs = V.outImgLoadResult
 
 -- |load ppm base class
 ppmloadSource :: VipsSource ->  PpmloadSource
 ppmloadSource a = vipsOp (Lookup :: Nickname "ppmload_source") & inputs & outputs
   where
     inputs = V.source a
-    outputs = V.outPpmloadSourceResult
+    outputs = V.outImgLoadResult
 
 -- |load ppm from file
 ppmload :: T.Text ->  Ppmload
 ppmload a = vipsOp (Lookup :: Nickname "ppmload") & inputs & outputs
   where
     inputs = V.filename a
-    outputs = V.outPpmloadResult
+    outputs = V.outImgLoadResult
 
 -- |load an Analyze6 image
 analyzeload :: T.Text ->  Analyzeload
 analyzeload a = vipsOp (Lookup :: Nickname "analyzeload") & inputs & outputs
   where
     inputs = V.filename a
-    outputs = V.outAnalyzeloadResult
+    outputs = V.outImgLoadResult
 
 -- |load vips from file
 vipsload :: T.Text ->  Vipsload
 vipsload a = vipsOp (Lookup :: Nickname "vipsload") & inputs & outputs
   where
     inputs = V.filename a
-    outputs = V.outVipsloadResult
+    outputs = V.outImgLoadResult
 
 -- |load raw data from a file
 rawload :: Int32 -> Int32 -> Int32 -> T.Text ->  Rawload
 rawload a b c d = vipsOp (Lookup :: Nickname "rawload") & inputs & outputs
   where
     inputs = V.bands a . V.height b . V.width c . V.filename d
-    outputs = V.outRawloadResult
+    outputs = V.outImgLoadResult
 
 -- |load matrix
 matrixloadSource :: VipsSource ->  MatrixloadSource
 matrixloadSource a = vipsOp (Lookup :: Nickname "matrixload_source") & inputs & outputs
   where
     inputs = V.source a
-    outputs = V.outMatrixloadSourceResult
+    outputs = V.outImgLoadResult
 
 -- |load matrix
 matrixload :: T.Text ->  Matrixload
 matrixload a = vipsOp (Lookup :: Nickname "matrixload") & inputs & outputs
   where
     inputs = V.filename a
-    outputs = V.outMatrixloadResult
+    outputs = V.outImgLoadResult
 
 -- |load csv
 csvloadSource :: VipsSource ->  CsvloadSource
 csvloadSource a = vipsOp (Lookup :: Nickname "csvload_source") & inputs & outputs
   where
     inputs = V.source a
-    outputs = V.outCsvloadSourceResult
+    outputs = V.outImgLoadResult
 
 -- |load csv
 csvload :: T.Text ->  Csvload
 csvload a = vipsOp (Lookup :: Nickname "csvload") & inputs & outputs
   where
     inputs = V.filename a
-    outputs = V.outCsvloadResult
+    outputs = V.outImgLoadResult
 
 -- |find the index of the first non-zero pixel in tests
 switch :: GV.ArrayImage ->  Switch

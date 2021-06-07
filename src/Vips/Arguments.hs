@@ -22,7 +22,7 @@ import           Vips.Introspection.Operations
 
 --
 -- The following code has been automatically generated using hvips-gen,
--- from libvips 8.10.6-Tue May 18 11:07:36 UTC 2021
+-- from libvips 8.10.6-Tue Jun  1 16:02:28 UTC 2021
 --
 
 
